@@ -1,0 +1,45 @@
+.navbar {
+  height: auto;
+  width: 100%;
+}
+.nav-item a {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+}
+.nav-item a:hover {
+  color: white;
+  text-decoration: none;
+}
+.nav-item a.active {
+  color: red;
+  font-weight: bold;
+  text-decoration: none;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 1);
+}
+li {
+  margin: 1rem;
+}
+.pokeball-animation {
+  width: 70px;
+  height: 70px;
+  transition: transform 0.9s ease; /* Transición suave */
+}
+
+.pokebola-animation:hover {
+  transform: rotate(360deg); /* Girar al pasar el cursor */
+}
+
+/* Definir la animación */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.pokeball-animation:hover {
+  animation: spin 0.5s linear infinite;
+}

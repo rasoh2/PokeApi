@@ -1,0 +1,28 @@
+.container-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 100vh;
+}
+
+.titulo {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Estilo para el botón */
+button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background-color: #ffcc00;
+  border: none;
+  cursor: pointer;
+}
+
+/* Estilo para el botón al pasar el mouse */
+button:hover {
+  background-color: orange;
+}

@@ -1,0 +1,7 @@
+/* Estilos para el footer */
+footer {
+  background-color: #d58080;
+  color: white; /* Texto blanco */
+  text-align: center;
+  padding: 20px;
+}

@@ -1,0 +1,95 @@
+.container-card {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  background-color: aliceblue;
+  border-radius: 1rem;
+}
+
+.container-img-ul {
+  display: flex;
+  align-items: center;
+}
+.list-unstyled {
+  display: flex;
+  flex-direction: column;
+}
+.ul-data {
+  display: flex;
+  padding: 1em 1rem;
+}
+.list-unstyled2 {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.imagen-pokemon {
+  width: 10rem;
+  height: 10rem;
+}
+/* 
+@property --degree {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 10deg;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  width: 102%;
+  height: 102%;
+  top: -1%;
+  left: -1%;
+  background: linear-gradient(
+    var(--degree),
+    hsl(60, 100%, 60%) 20%,
+    hsl(120, 100%, 60%) 40%,
+    hsl(180, 100%, 60%) 60%,
+    hsl(240, 100%, 60%) 80%,
+    hsl(300, 100%, 60%) 100%
+  );
+  border-radius: inherit;
+  z-index: -1;
+  animation: spin 3s infinite ease-in-out;
+  will-change: contents;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  width: 105%;
+  height: 105%;
+  top: -1%;
+  left: -1%;
+  background: linear-gradient(
+    var(--degree),
+    hsl(60, 100%, 60%) 20%,
+    hsl(120, 100%, 60%) 40%,
+    hsl(180, 100%, 60%) 60%,
+    hsl(240, 100%, 60%) 80%,
+    hsl(300, 100%, 60%) 100%
+  );
+  border-radius: inherit;
+  filter: blur(20px);
+  z-index: -2;
+  animation: spin 3s infinite ease-in-out;
+  will-change: contents;
+}
+
+@keyframes spin {
+  0% {
+    --degree: 1deg;
+  }
+  100% {
+    --degree: 360deg;
+  }
+} */
