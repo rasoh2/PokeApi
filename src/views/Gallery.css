@@ -1,14 +1,12 @@
-/* Estilos generales para la galería */
 .container-gallery {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  height: 100vh;
   padding: 20px;
+  height: 85vh;
 }
 
-/* Estilos para el título principal */
 h1 {
   font-size: 2rem;
   margin-bottom: 10px;
@@ -16,7 +14,6 @@ h1 {
   text-align: center;
 }
 
-/* Estilos para las imágenes en la galería */
 .container-img-gallery img {
   width: 15rem;
   height: auto;
@@ -24,7 +21,6 @@ h1 {
   margin: 0 auto 10px;
 }
 
-/* Estilos para el párrafo en la galería */
 .container-gallery p {
   width: 20rem;
   margin: 0 auto 10px;
@@ -34,24 +30,21 @@ h1 {
   text-align: justify;
 }
 
-/* Estilos para el selector en la galería */
 .container-gallery select {
   padding: 10px;
   margin-bottom: 10px;
 }
 
-/* Estilos para la sección de selector y botón en la galería */
 .container-gallery span {
   color: rgb(255, 0, 0);
 
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.5rem;
   display: block;
   margin-top: 5px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* Estilos específicos para el selector en la galería */
 .container-gallery select {
   padding: 10px;
   margin-bottom: 10px;
@@ -69,7 +62,6 @@ h1 {
   border-color: #555;
 }
 
-/* Estilos para las opciones del selector en la galería */
 .container-gallery select option {
   background-color: #f9f9f9;
   color: #333;
@@ -78,4 +70,16 @@ h1 {
 .container-gallery select option:hover {
   background-color: #ddd;
   color: #555;
+}
+@media (max-width: 780px) {
+  .rounded {
+    max-width: 90vw;
+    max-height: 70vh;
+  }
+}
+
+@media (max-width: 950px) and (orientation: landscape) {
+  .container-gallery {
+    height: 190vh;
+  }
 }

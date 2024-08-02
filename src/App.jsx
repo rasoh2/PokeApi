@@ -10,13 +10,13 @@ import NotFound from "./components/NotFound";
 function App() {
   return (
     <BrowserRouter>
-      <div className="container-app">
+      <div className='container-app'>
         <NavBar />
         <Routes>
-          <Route path="/" element={<Home></Home>} />
-          <Route path="/gallery" element={<Gallery></Gallery>} />
-          <Route path="/gallery/:pokemon" element={<Card></Card>} />
-          <Route path="*" element={<NotFound />} />
+          <Route path='/' element={<Home></Home>} />
+          <Route path='/gallery' element={<Gallery></Gallery>} />
+          <Route path='/gallery/:pokemon' element={<Card></Card>} />
+          <Route path='*' element={<NotFound />} />
         </Routes>
         <Footer />
       </div>
