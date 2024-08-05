@@ -13,9 +13,9 @@ function App() {
       <div className='container-app'>
         <NavBar />
         <Routes>
-          <Route path='/' element={<Home></Home>} />
-          <Route path='/gallery' element={<Gallery></Gallery>} />
-          <Route path='/gallery/:pokemon' element={<Card></Card>} />
+          <Route path='/' element={<Home />} />
+          <Route path='/gallery' element={<Gallery />} />
+          <Route path='/gallery/:pokemon' element={<Card />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
         <Footer />
