@@ -59,8 +59,8 @@ const Card = () => {
   };
 
   return (
-    <div className='container-card' style={{ backgroundColor }}>
-      <div className='card'>
+    <div className='container-card'>
+      <div className='card' style={{ backgroundColor }}>
         <h2 className='text-uppercase text-center'>{pokemon}</h2>
         <div className='container-img-ul'>
           <div>

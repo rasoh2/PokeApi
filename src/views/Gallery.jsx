@@ -4,51 +4,40 @@ import ProfesorOk from "../assets/img/PngItem_4780727.png";
 import "./Gallery.css";
 
 const Gallery = () => {
-  // Estado para almacenar la lista de pokemones
   const [pokemones, setPokemones] = useState([]);
 
-  // Estado para almacenar el nombre del Pokémon seleccionado
   const [pokemon, setPokemon] = useState("");
 
-  // Estado para manejar mensajes de error
   const [msgError, setMsgError] = useState(false);
 
-  // Hook de React Router para navegar entre páginas
   const navigate = useNavigate();
 
-  // Función para obtener la lista de pokemones
   const getPokemones = async () => {
     try {
-      // Realiza una solicitud a la API para obtener información sobre los pokemones
       const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=200");
-      const { results } = await res.json(); // Extrae la lista de resultados
+      const { results } = await res.json();
 
-      // Actualiza el estado con la lista de pokemones
       setPokemones(results);
     } catch (error) {
       console.error("Error fetching Pokemon data:", error);
     }
   };
 
-  // Función para manejar la acción de ver el detalle del Pokémon
   const goCard = async () => {
     if (!pokemon) {
-      // Si no se ha seleccionado un Pokémon, muestra un mensaje de error
       setMsgError(true);
       return;
     }
 
-    // Navega a la página de detalle del Pokémon seleccionado
     navigate(`/gallery/${pokemon}`);
   };
 
-  // Se ejecuta al cargar el componente para obtener la lista de pokemones
   useEffect(() => {
     getPokemones();
   }, []);
 
   return (
-    <div className='container-gallery '>
+    <div className='container-gallery  '>
       <h1>Selecciona tu pokemón</h1>
       <div className=' container-img-gallery'>
         <img src={ProfesorOk} alt=' 4 pokemón originales' />

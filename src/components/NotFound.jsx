@@ -1,6 +1,7 @@
+import "./NotFound.css";
 const NotFound = () => {
   return (
-    <div className="container-notfound">
+    <div className='container-NotFound'>
       <h1> Not Found</h1>
     </div>
   );

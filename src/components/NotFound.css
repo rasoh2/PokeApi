@@ -1,0 +1,10 @@
+.container-NotFound {
+  text-align: center;
+  padding: 20px;
+  margin: 3rem;
+  color: red;
+  background-image: url("../assets/img/snorlax.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
