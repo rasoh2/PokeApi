@@ -5,16 +5,14 @@
   align-items: center;
   width: 100%;
   padding: 20px;
-  overflow: hidden;
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  padding: 4rem;
+  padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
 .container-img-ul {

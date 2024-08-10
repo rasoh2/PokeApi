@@ -4,8 +4,7 @@
   align-items: center;
   justify-content: space-around;
   padding: 1rem;
-  height: 100%;
-  overflow: hidden;
+  height: 100vh;
   height: auto;
 }
 
@@ -29,4 +28,9 @@ button {
   max-width: 100%;
   height: auto;
   margin-bottom: 20px;
+}
+@media only screen and (max-width: 767px) and (orientation: landscape) {
+  .container-app {
+    height: none;
+  }
 }
