@@ -21,13 +21,13 @@ const Home = () => {
                 Bienvenido, Entrenador
                 <i className='fas fa-star text-warning ms-2'></i>
               </div>
-              <h1 className='display-3 fw-bold text-white mb-3 title-glitch'>
+              <h1 className='display-3 fw-bold text-dark mb-3 title-glitch'>
                 <span className='text-gradient'>¡Conviértete en un</span>
                 <br />
-                <span className='text-warning'>Maestro Pokémon!</span>
+                <span className='text-danger'>Maestro Pokémon!</span>
               </h1>
-              <p className='lead text-white-50 mb-4 px-3'>
-                <i className='fas fa-bolt text-warning me-2'></i>
+              <p className='lead text-dark mb-4 px-3'>
+                <i className='fas fa-bolt text-danger me-2'></i>
                 Explora más de 1000 Pokémon de todas las generaciones
               </p>
             </div>
@@ -59,8 +59,8 @@ const Home = () => {
                   <div className='feature-icon mb-3'>
                     <i className='fas fa-database fa-2x text-info'></i>
                   </div>
-                  <h5 className='text-white fw-bold'>+1000 Pokémon</h5>
-                  <p className='text-white-50 small mb-0'>
+                  <h5 className='text-dark fw-bold'>+1000 Pokémon</h5>
+                  <p className='text-secondary small mb-0'>
                     Base de datos completa
                   </p>
                 </div>
@@ -70,8 +70,8 @@ const Home = () => {
                   <div className='feature-icon mb-3'>
                     <i className='fas fa-bolt fa-2x text-warning'></i>
                   </div>
-                  <h5 className='text-white fw-bold'>Información Real</h5>
-                  <p className='text-white-50 small mb-0'>
+                  <h5 className='text-dark fw-bold'>Información Real</h5>
+                  <p className='text-secondary small mb-0'>
                     Datos de PokéAPI oficial
                   </p>
                 </div>
@@ -81,8 +81,8 @@ const Home = () => {
                   <div className='feature-icon mb-3'>
                     <i className='fas fa-fire fa-2x text-danger'></i>
                   </div>
-                  <h5 className='text-white fw-bold'>Diseño Premium</h5>
-                  <p className='text-white-50 small mb-0'>
+                  <h5 className='text-dark fw-bold'>Diseño Premium</h5>
+                  <p className='text-secondary small mb-0'>
                     Interfaz moderna y atractiva
                   </p>
                 </div>
@@ -99,7 +99,7 @@ const Home = () => {
                 Comenzar Aventura
                 <i className='fas fa-arrow-right ms-3'></i>
               </button>
-              <p className='text-white-50 mt-3 small'>
+              <p className='text-dark mt-3 small'>
                 <i className='fas fa-info-circle me-2'></i>
                 ¡Atrápalos a todos!
               </p>

@@ -10,14 +10,16 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [msgError, setMsgError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState("select"); // 'select' o 'grid'
+  const [viewMode, setViewMode] = useState("select");
+  const [itemsToShow, setItemsToShow] = useState(30); // Cantidad inicial a mostrar
+  const ITEMS_PER_PAGE = 30; // Pokémon por página
 
   const navigate = useNavigate();
 
   const getPokemones = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=500");
+      const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
       const { results } = await res.json();
 
       const pokemonData = results.sort((a, b) => a.name.localeCompare(b.name));
@@ -41,6 +43,7 @@ const Gallery = () => {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
+    setItemsToShow(30); // Resetear a 30 al buscar
     if (value === "") {
       setFilteredPokemones(pokemones);
     } else {
@@ -54,6 +57,12 @@ const Gallery = () => {
   const handleCardClick = (name) => {
     navigate(`/gallery/${name}`);
   };
+
+  const loadMorePokemon = () => {
+    setItemsToShow((prev) => prev + ITEMS_PER_PAGE);
+  };
+
+  const hasMorePokemon = itemsToShow < filteredPokemones.length;
 
   useEffect(() => {
     getPokemones();
@@ -72,11 +81,11 @@ const Gallery = () => {
             />
           </div>
 
-          <h1 className='display-4 fw-bold text-white mb-3'>
-            <i className='fas fa-book-open text-warning me-3'></i>
+          <h1 className='display-4 fw-bold text-dark mb-3'>
+            <i className='fas fa-book-open text-danger me-3'></i>
             PokéDex Completa
           </h1>
-          <p className='lead text-white-50 mb-4'>
+          <p className='lead text-dark mb-4'>
             ¡Bienvenido, Entrenador! Elige tu Pokémon y descubre sus habilidades
             únicas
           </p>
@@ -103,13 +112,13 @@ const Gallery = () => {
         {loading ? (
           <div className='text-center py-5'>
             <div
-              className='spinner-border text-warning'
+              className='spinner-border text-danger'
               role='status'
               style={{ width: "3rem", height: "3rem" }}
             >
               <span className='visually-hidden'>Cargando...</span>
             </div>
-            <p className='text-white mt-3'>Cargando Pokédex...</p>
+            <p className='text-dark mt-3'>Cargando Pokédex...</p>
           </div>
         ) : (
           <>
@@ -169,7 +178,7 @@ const Gallery = () => {
                       <i className='fas fa-arrow-right ms-2'></i>
                     </button>
 
-                    <p className='text-center text-white-50 mt-3 small'>
+                    <p className='text-center text-dark mt-3 small'>
                       <i className='fas fa-info-circle me-2'></i>
                       {filteredPokemones.length} Pokémon disponibles
                     </p>
@@ -192,51 +201,74 @@ const Gallery = () => {
                         onChange={(e) => handleSearch(e.target.value)}
                       />
                     </div>
-                    <p className='text-center text-white-50 mt-2 small'>
-                      Mostrando {filteredPokemones.length} de {pokemones.length}{" "}
-                      Pokémon
+                    <p className='text-center text-dark mt-2 small'>
+                      Mostrando{" "}
+                      {Math.min(itemsToShow, filteredPokemones.length)} de{" "}
+                      {filteredPokemones.length} Pokémon
                     </p>
                   </div>
                 </div>
 
                 {/* Grid de tarjetas */}
                 <div className='row g-4'>
-                  {filteredPokemones.slice(0, 150).map(({ name, url }) => {
-                    const pokemonId = url.split("/").filter(Boolean).pop();
-                    const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
+                  {filteredPokemones
+                    .slice(0, itemsToShow)
+                    .map(({ name, url }) => {
+                      const pokemonId = url.split("/").filter(Boolean).pop();
+                      const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
 
-                    return (
-                      <div
-                        key={name}
-                        className='col-6 col-sm-4 col-md-3 col-lg-2'
-                      >
+                      return (
                         <div
-                          className='pokemon-grid-card hover-lift'
-                          onClick={() => handleCardClick(name)}
+                          key={name}
+                          className='col-6 col-sm-4 col-md-3 col-lg-2'
                         >
-                          <div className='pokemon-card-image'>
-                            <img
-                              src={imageUrl}
-                              alt={name}
-                              onError={(e) => {
-                                e.target.src =
-                                  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" +
-                                  pokemonId +
-                                  ".png";
-                              }}
-                            />
-                          </div>
-                          <div className='pokemon-card-info'>
-                            <span className='pokemon-id'>
-                              #{pokemonId.padStart(3, "0")}
-                            </span>
-                            <h6 className='pokemon-name'>{name}</h6>
+                          <div
+                            className='pokemon-grid-card hover-lift'
+                            onClick={() => handleCardClick(name)}
+                          >
+                            <div className='pokemon-card-image'>
+                              <img
+                                src={imageUrl}
+                                alt={name}
+                                onError={(e) => {
+                                  e.target.src =
+                                    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" +
+                                    pokemonId +
+                                    ".png";
+                                }}
+                              />
+                            </div>
+                            <div className='pokemon-card-info'>
+                              <span className='pokemon-id'>
+                                #{pokemonId.padStart(3, "0")}
+                              </span>
+                              <h6 className='pokemon-name'>{name}</h6>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
+
+                {/* Botón Cargar Más */}
+                {hasMorePokemon && (
+                  <div className='text-center mt-5'>
+                    <button
+                      className='btn-pokemon-action'
+                      onClick={loadMorePokemon}
+                      style={{ maxWidth: "400px" }}
+                    >
+                      <i className='fas fa-plus-circle me-2'></i>
+                      Cargar Más Pokémon
+                      <i className='fas fa-chevron-down ms-2'></i>
+                    </button>
+                    <p className='text-dark mt-3 small'>
+                      <i className='fas fa-info-circle me-2'></i>
+                      Quedan {filteredPokemones.length - itemsToShow} Pokémon
+                      por mostrar
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </>

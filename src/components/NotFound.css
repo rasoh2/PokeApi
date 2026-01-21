@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #dc0a2d 0%, #3b4cca 100%);
   position: relative;
   overflow: hidden;
 }
@@ -46,7 +46,7 @@
 .pokeball-top {
   width: 200px;
   height: 100px;
-  background: linear-gradient(135deg, #ff1c1c 0%, #cc0000 100%);
+  background: linear-gradient(135deg, #dc0a2d 0%, #b3002d 100%);
   border-radius: 100px 100px 0 0;
   border-bottom: 4px solid #333;
   box-shadow: inset 0 -5px 15px rgba(0, 0, 0, 0.3);
@@ -89,7 +89,7 @@
   font-weight: 900;
   color: white;
   text-shadow:
-    4px 4px 0 rgba(255, 28, 28, 0.5),
+    4px 4px 0 rgba(220, 10, 45, 0.5),
     8px 8px 20px rgba(0, 0, 0, 0.5);
   animation: glitch 3s ease-in-out infinite;
   position: absolute;
@@ -155,14 +155,14 @@
 }
 
 .btn-primary-404 {
-  background: linear-gradient(135deg, #ff1c1c 0%, #cc0000 100%);
+  background: linear-gradient(135deg, #dc0a2d 0%, #b3002d 100%);
   color: white;
-  border: 3px solid #ffd700;
+  border: 3px solid #ffcb05;
 }
 
 .btn-primary-404:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(255, 28, 28, 0.5);
+  box-shadow: 0 12px 30px rgba(220, 10, 45, 0.5);
   border-color: white;
 }
 
@@ -219,7 +219,7 @@
       0 0 0 8px white,
       0 0 0 12px #333,
       inset 0 4px 8px rgba(0, 0, 0, 0.2),
-      0 0 20px rgba(255, 215, 0, 0.5);
+      0 0 20px rgba(255, 203, 5, 0.5);
   }
 }
 
@@ -227,17 +227,17 @@
   0%,
   100% {
     text-shadow:
-      4px 4px 0 rgba(255, 28, 28, 0.5),
+      4px 4px 0 rgba(220, 10, 45, 0.5),
       8px 8px 20px rgba(0, 0, 0, 0.5);
   }
   25% {
     text-shadow:
-      -4px 4px 0 rgba(59, 130, 246, 0.5),
+      -4px 4px 0 rgba(59, 76, 202, 0.5),
       8px 8px 20px rgba(0, 0, 0, 0.5);
   }
   50% {
     text-shadow:
-      4px -4px 0 rgba(255, 215, 0, 0.5),
+      4px -4px 0 rgba(255, 203, 5, 0.5),
       8px 8px 20px rgba(0, 0, 0, 0.5);
   }
   75% {

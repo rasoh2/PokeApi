@@ -1,8 +1,11 @@
 .pokemon-navbar {
-  background: linear-gradient(135deg, #ff1c1c 0%, #cc0000 100%) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #dc0a2d 0%, #b3002d 100%) !important;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 -2px 0 rgba(255, 255, 255, 0.2) inset;
   backdrop-filter: blur(10px);
-  border-bottom: 3px solid #ffd700;
+  border-bottom: 4px solid #1a1a1a;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
   z-index: 1000;
 }
 
@@ -20,7 +23,7 @@
   text-decoration: none;
   font-weight: 600;
   font-size: 1.05rem;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   position: relative;
   overflow: hidden;
@@ -33,15 +36,17 @@
   left: 50%;
   width: 0;
   height: 3px;
-  background: #ffd700;
-  transition: all 0.3s ease;
+  background: #ffcb05;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   transform: translateX(-50%);
+  box-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
 }
 
 .navbar-nav .nav-link:hover {
   color: white !important;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px) scale(1.05);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-nav .nav-link:hover::before {
@@ -49,10 +54,10 @@
 }
 
 .navbar-nav .nav-link.active {
-  color: #ffd700 !important;
+  color: #ffcb05 !important;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.15);
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  text-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
   transform: scale(1.05);
 }
 
@@ -68,23 +73,23 @@
   font-weight: 600;
   font-size: 0.9rem;
   backdrop-filter: blur(5px);
-  border: 2px solid rgba(255, 215, 0, 0.5);
+  border: 2px solid rgba(255, 203, 5, 0.5);
   animation: pulse 3s ease-in-out infinite;
 }
 
 .pokeball-animation {
   width: 50px;
   height: 50px;
-  transition: all 0.5s ease;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .pokeball-animation:hover {
   animation:
-    spin 1s linear infinite,
-    shake 0.5s ease;
-  filter: drop-shadow(0 8px 16px rgba(255, 215, 0, 0.6));
-  transform: scale(1.1);
+    spin 0.8s linear infinite,
+    bounce 0.6s ease;
+  filter: drop-shadow(0 8px 20px rgba(255, 203, 5, 0.8));
+  transform: scale(1.2);
 }
 
 .navbar-toggler {
@@ -93,7 +98,7 @@
 }
 
 .navbar-toggler:focus {
-  box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.5) !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 203, 5, 0.5) !important;
 }
 
 .navbar-toggler-icon {
@@ -131,7 +136,23 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.02);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-15px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  75% {
+    transform: translateY(-10px);
   }
 }
 

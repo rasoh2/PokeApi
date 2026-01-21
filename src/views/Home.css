@@ -18,12 +18,12 @@
   background:
     radial-gradient(
       circle at 30% 50%,
-      rgba(255, 28, 28, 0.1) 0%,
+      rgba(220, 10, 45, 0.08) 0%,
       transparent 50%
     ),
     radial-gradient(
       circle at 70% 50%,
-      rgba(59, 130, 246, 0.1) 0%,
+      rgba(26, 26, 26, 0.05) 0%,
       transparent 50%
     );
   animation: rotate 30s linear infinite;
@@ -34,31 +34,40 @@
   display: inline-block;
   background: linear-gradient(
     135deg,
-    rgba(255, 215, 0, 0.2),
-    rgba(255, 28, 28, 0.2)
+    rgba(255, 255, 255, 0.95),
+    rgba(248, 248, 248, 0.9)
   );
   padding: 12px 30px;
   border-radius: 50px;
   font-weight: 700;
   font-size: 1.1rem;
-  color: white;
-  border: 2px solid rgba(255, 215, 0, 0.5);
-  backdrop-filter: blur(10px);
+  color: #dc0a2d;
+  border: 3px solid #1a1a1a;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   text-transform: uppercase;
   letter-spacing: 2px;
-  animation: glow 2s ease-in-out infinite;
+  animation: glow 3s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pokemon-badge:hover {
+  transform: scale(1.1) rotate(-2deg);
+  border-color: #dc0a2d;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(220, 10, 45, 0.4);
 }
 
 .title-glitch {
+  color: #1a1a1a;
   text-shadow:
-    3px 3px 0 rgba(255, 28, 28, 0.5),
-    -2px -2px 0 rgba(59, 130, 246, 0.5),
-    0 0 20px rgba(255, 215, 0, 0.3);
+    3px 3px 0 rgba(220, 10, 45, 0.6),
+    -2px -2px 0 rgba(255, 255, 255, 0.8),
+    0 0 20px rgba(26, 26, 26, 0.3);
   animation: textGlow 3s ease-in-out infinite;
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #dc0a2d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -69,15 +78,16 @@
   overflow: hidden;
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .image-container:hover {
-  transform: translateY(-10px) scale(1.02);
+  transform: translateY(-15px) scale(1.03) rotateY(2deg);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 
 .image-container:hover .pokemon-main-image {
-  transform: scale(1.1);
+  transform: scale(1.15) rotate(-3deg);
 }
 
 .image-container:hover .image-overlay {
@@ -88,7 +98,7 @@
   width: 100%;
   height: auto;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .image-glow {
@@ -100,7 +110,7 @@
   height: 100%;
   background: radial-gradient(
     circle,
-    rgba(255, 215, 0, 0.3) 0%,
+    rgba(255, 203, 5, 0.3) 0%,
     transparent 70%
   );
   opacity: 0;
@@ -116,8 +126,8 @@
   height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(255, 28, 28, 0.9) 0%,
-    rgba(59, 130, 246, 0.9) 100%
+    rgba(220, 10, 45, 0.9) 0%,
+    rgba(59, 76, 202, 0.9) 100%
   );
   display: flex;
   align-items: center;
@@ -137,14 +147,14 @@
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid #1a1a1a;
   border-radius: 20px;
   padding: 2rem 1.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .feature-card::before {
@@ -165,9 +175,10 @@
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(255, 215, 0, 0.5);
-  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+  transform: translateY(-10px) scale(1.03);
+  border-color: #dc0a2d;
+  box-shadow: 0 15px 40px rgba(220, 10, 45, 0.3);
+  background: #ffffff;
 }
 
 .feature-card:hover::before {
@@ -178,34 +189,38 @@
   width: 70px;
   height: 70px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.1);
+  background: #1a1a1a;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.1) rotate(10deg);
-  background: rgba(255, 215, 0, 0.2);
+  transform: scale(1.2) rotate(360deg);
+  background: #dc0a2d;
+  box-shadow: 0 0 30px rgba(220, 10, 45, 0.5);
 }
 
 .btn-pokemon {
-  background: linear-gradient(135deg, #ff1c1c 0%, #cc0000 100%);
-  border: 3px solid #ffd700;
+  background: linear-gradient(135deg, #dc0a2d 0%, #b3002d 100%);
+  border: 3px solid #ffcb05;
   color: white;
   font-weight: 700;
   font-size: 1.2rem;
   border-radius: 50px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   box-shadow:
-    0 10px 30px rgba(255, 28, 28, 0.4),
-    0 0 20px rgba(255, 215, 0, 0.3);
+    0 10px 30px rgba(220, 10, 45, 0.4),
+    0 0 20px rgba(255, 203, 5, 0.3);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .btn-pokemon::before {
@@ -231,8 +246,8 @@
 .btn-pokemon:hover {
   transform: translateY(-5px) scale(1.05);
   box-shadow:
-    0 15px 40px rgba(255, 28, 28, 0.6),
-    0 0 30px rgba(255, 215, 0, 0.5);
+    0 15px 40px rgba(220, 10, 45, 0.6),
+    0 0 30px rgba(255, 203, 5, 0.5);
   border-color: white;
 }
 
@@ -292,10 +307,10 @@
 @keyframes glow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 20px rgba(255, 203, 5, 0.5);
   }
   50% {
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 30px rgba(255, 203, 5, 0.8);
   }
 }
 
@@ -303,15 +318,15 @@
   0%,
   100% {
     text-shadow:
-      3px 3px 0 rgba(255, 28, 28, 0.5),
-      -2px -2px 0 rgba(59, 130, 246, 0.5),
-      0 0 20px rgba(255, 215, 0, 0.3);
+      3px 3px 0 rgba(220, 10, 45, 0.5),
+      -2px -2px 0 rgba(59, 76, 202, 0.5),
+      0 0 20px rgba(255, 203, 5, 0.3);
   }
   50% {
     text-shadow:
-      3px 3px 0 rgba(255, 28, 28, 0.7),
-      -2px -2px 0 rgba(59, 130, 246, 0.7),
-      0 0 40px rgba(255, 215, 0, 0.6);
+      3px 3px 0 rgba(220, 10, 45, 0.7),
+      -2px -2px 0 rgba(59, 76, 202, 0.7),
+      0 0 40px rgba(255, 203, 5, 0.6);
   }
 }
 
