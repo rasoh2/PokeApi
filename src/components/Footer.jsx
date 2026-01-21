@@ -1,4 +1,4 @@
-import "./footer.css";
+import "./Footer.css";
 
 const Footer = () => {
   return (
@@ -80,9 +80,7 @@ const Footer = () => {
         {/* Mensaje motivacional */}
         <div className='row mt-3'>
           <div className='col-12 text-center'>
-            <p className='footer-quote'>
-              “¡Hazte con todos!” - Gotta catch 'em all!
-            </p>
+            <p className='footer-quote'>&ldquo;¡Atrápalos a todos!&rdquo;</p>
           </div>
         </div>
       </div>

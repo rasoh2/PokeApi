@@ -22,7 +22,7 @@ const Home = () => {
                 <i className='fas fa-star text-warning ms-2'></i>
               </div>
               <h1 className='display-3 fw-bold text-white mb-3 title-glitch'>
-                <span className='text-gradient'>¡Conviértete en</span>
+                <span className='text-gradient'>¡Conviértete en un</span>
                 <br />
                 <span className='text-warning'>Maestro Pokémon!</span>
               </h1>
@@ -101,7 +101,7 @@ const Home = () => {
               </button>
               <p className='text-white-50 mt-3 small'>
                 <i className='fas fa-info-circle me-2'></i>
-                ¡Gotta catch 'em all!
+                ¡Atrápalos a todos!
               </p>
             </div>
           </div>

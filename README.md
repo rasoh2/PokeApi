@@ -379,7 +379,7 @@ Si encuentras algún problema o tienes sugerencias:
 
 <div align="center">
   
-  **¡Gotta Catch 'Em All!** 🎮⚡
+  **¡Atrápalos a Todos!** 🎮⚡
   
   Hecho con ❤️ y ⚡ para **Desafío Latam** (2024)
   

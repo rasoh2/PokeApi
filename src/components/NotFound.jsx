@@ -28,7 +28,7 @@ const NotFound = () => {
             </h1>
 
             <p className='error-message mb-4'>
-              Parece que este Pokémon escapó o no existe en tu Pokédex.
+              Parece que este Pokémon se escapó o no existe en tu Pokédex.
               <br />
               <span className='text-warning fw-bold'>
                 El Pokémon que buscas está en otro servidor...
@@ -46,7 +46,7 @@ const NotFound = () => {
             <div className='error-tips mb-4'>
               <p className='mb-2'>
                 <i className='fas fa-lightbulb text-info me-2'></i>
-                Verifica la URL o intenta buscar otro Pokémon
+                Revisa la URL o intenta buscar otro Pokémon
               </p>
             </div>
 

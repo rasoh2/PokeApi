@@ -77,8 +77,8 @@ const Gallery = () => {
             PokéDex Completa
           </h1>
           <p className='lead text-white-50 mb-4'>
-            ¡Bienvenido, Entrenador! Selecciona tu Pokémon y descubre sus
-            habilidades únicas
+            ¡Bienvenido, Entrenador! Elige tu Pokémon y descubre sus habilidades
+            únicas
           </p>
 
           {/* Toggle View Mode */}
@@ -148,7 +148,7 @@ const Gallery = () => {
                         className='form-select pokemon-select'
                         value={pokemon}
                       >
-                        <option value=''>🎯 Selecciona tu Pokémon</option>
+                        <option value=''>🎯 Elige tu Pokémon</option>
                         {filteredPokemones.map(({ name }) => (
                           <option key={name} value={name}>
                             {name.charAt(0).toUpperCase() + name.slice(1)}
