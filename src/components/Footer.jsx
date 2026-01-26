@@ -12,9 +12,8 @@ const Footer = () => {
               <span className='fw-bold'>PokéDex Ultimate</span>
             </div>
             <p className='footer-copyright mb-0'>
-              &copy; {new Date().getFullYear()} | Creado con
-              <i className='fas fa-heart text-danger mx-1'></i>
-              para entrenadores
+              &copy; {new Date().getFullYear()} | Creado para maestros
+              entrenadores
             </p>
           </div>
 

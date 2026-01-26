@@ -11,7 +11,7 @@
 
 **Una PokéDex moderna con el diseño oficial de Pokémon** ⚪🔴
 
-_Explora más de 500 Pokémon con animaciones premium y diseño Pokéball_
+_Explora más de 1000 Pokémon con animaciones y diseño Pokéball_
 
 </div>
 
@@ -37,7 +37,7 @@ _Explora más de 500 Pokémon con animaciones premium y diseño Pokéball_
 
 ### 🎯 Funcionalidades Core
 
-- **500+ Pokémon**: Catálogo completo de la PokéAPI con información detallada
+- **1000+ Pokémon**: Catálogo completo de la PokéAPI con información detallada
 - **Paginación inteligente**: Sistema de "Load More" que carga 30 Pokémon por página
 - **Búsqueda en tiempo real**: Filtra Pokémon instantáneamente mientras escribes
 - **Filtro por tipo**: Selector dinámico para explorar por tipo de Pokémon
@@ -49,7 +49,7 @@ _Explora más de 500 Pokémon con animaciones premium y diseño Pokéball_
 
 - **Paleta oficial Pokémon**: Colores auténticos (Rojo #DC0A2D, Amarillo #FFCB05, Azul #3B4CCA)
 - **Diseño Pokéball**: Esquema de colores blanco/negro/rojo inspirado en la Pokéball icónica
-- **Animaciones premium**:
+- **Animaciones**:
   - Cubic-bezier timing functions para movimientos naturales
   - Efectos de entrada con transformaciones 3D
   - Animaciones de hover con rotación y escalado
@@ -312,7 +312,7 @@ transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
 ### PokéAPI v2
 
-**Endpoint principal**: `https://pokeapi.co/api/v2/pokemon?limit=500`
+**Endpoint principal**: `https://pokeapi.co/api/v2/pokemon?limit=1000`
 
 #### Datos obtenidos:
 
@@ -328,7 +328,7 @@ transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
 ```javascript
 // Lista de Pokémon
-GET https://pokeapi.co/api/v2/pokemon?limit=500
+GET https://pokeapi.co/api/v2/pokemon?limit=1000
 
 // Detalle individual
 GET https://pokeapi.co/api/v2/pokemon/{id}
@@ -346,7 +346,7 @@ GET https://pokeapi.co/api/v2/pokemon-species/{id}
 - ✅ Implementación de colores oficiales de Pokémon
 - ✅ Gradientes rojo/amarillo/azul en fondos
 
-### Fase 2: Animaciones Premium
+### Fase 2: Animaciones
 
 - ✅ Cubic-bezier timing functions
 - ✅ Transformaciones 3D en entradas
@@ -436,7 +436,7 @@ _Este proyecto usa [PokéAPI](https://pokeapi.co/) - Una API RESTful abierta par
 - Lista de habilidades (incluyendo ocultas)
 - Primeros 10 movimientos
 - Diseño adaptativo según el tipo
-- Efectos visuales premium
+- Efectos visuales
 
 ### 🧭 **Navegación**
 
@@ -624,7 +624,7 @@ npm run build
 
 - Visualización en tarjetas
 - Imágenes oficiales
-- Efectos hover premium
+- Efectos hover
 
 ### 🔍 Vista de Detalle
 

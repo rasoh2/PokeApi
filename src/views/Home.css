@@ -58,19 +58,14 @@
 }
 
 .title-glitch {
-  color: #1a1a1a;
-  text-shadow:
-    3px 3px 0 rgba(220, 10, 45, 0.6),
-    -2px -2px 0 rgba(255, 255, 255, 0.8),
-    0 0 20px rgba(26, 26, 26, 0.3);
-  animation: textGlow 3s ease-in-out infinite;
-}
-
-.text-gradient {
-  background: linear-gradient(135deg, #1a1a1a 0%, #dc0a2d 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #dc0a2d; /* Cambiado para que coincida con el color del título */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+  font-weight: 900;
+  font-size: 3rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  animation: none;
 }
 
 .image-container {

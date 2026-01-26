@@ -22,9 +22,9 @@ const Home = () => {
                 <i className='fas fa-star text-warning ms-2'></i>
               </div>
               <h1 className='display-3 fw-bold text-dark mb-3 title-glitch'>
-                <span className='text-gradient'>¡Conviértete en un</span>
+                <span className='text-dark'>¡Conviértete en un</span>
                 <br />
-                <span className='text-danger'>Maestro Pokémon!</span>
+                <span className='text-dark'>Maestro Pokémon!</span>
               </h1>
               <p className='lead text-dark mb-4 px-3'>
                 <i className='fas fa-bolt text-danger me-2'></i>
@@ -81,7 +81,7 @@ const Home = () => {
                   <div className='feature-icon mb-3'>
                     <i className='fas fa-fire fa-2x text-danger'></i>
                   </div>
-                  <h5 className='text-dark fw-bold'>Diseño Premium</h5>
+                  <h5 className='text-dark fw-bold'>Diseño</h5>
                   <p className='text-secondary small mb-0'>
                     Interfaz moderna y atractiva
                   </p>
