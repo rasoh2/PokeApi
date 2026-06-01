@@ -35,7 +35,10 @@ export function usePokemonDetails(name) {
       try {
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
-          return JSON.parse(cached);
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.types && parsed.types.length > 0) {
+            return parsed;
+          }
         }
       } catch (e) {
         console.warn('LocalStorage parse error, fetching fresh data', e);

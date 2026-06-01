@@ -5,6 +5,7 @@ import { usePokemonList, usePokemonDetails } from '../hooks/usePokemonData';
 import { Button, Card, Loader, TextInput } from '@gravity-ui/uikit';
 import confetti from 'canvas-confetti';
 import './BattleSimulator.css';
+import './PokemonCard.css';
 
 // Mapeo de fortalezas y debilidades de tipos
 const TYPE_EFFECTIVENESS = {

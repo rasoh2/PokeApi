@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Card } from '@gravity-ui/uikit';
 import './PokemonCard.css';
 
 // Mapeo de íconos de tipo
@@ -86,7 +85,7 @@ export default function PokemonCard({ pokemon, onClick }) {
         transformStyle: 'preserve-3d',
       }}
     >
-      <Card className="pokemon-gravity-card" theme="normal" view="raised">
+      <div className={`pokemon-gravity-card type-${primaryType}`}>
         {/* Capa Holográfica Brillante */}
         {hovered && (
           <motion.div
@@ -138,7 +137,7 @@ export default function PokemonCard({ pokemon, onClick }) {
             )}
           </div>
         </div>
-      </Card>
+      </div>
     </motion.div>
   );
 }

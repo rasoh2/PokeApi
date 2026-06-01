@@ -1,18 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePokemonList } from '../hooks/usePokemonData';
+import { usePokemonList, usePokemonDetails } from '../hooks/usePokemonData';
 import { usePokemonTheme } from '../context/PokemonThemeContext';
 import SearchPredictive from '../components/SearchPredictive';
 import PokemonCard from '../components/PokemonCard';
-import { Loader, Button } from '@gravity-ui/uikit';
+import { Card, Loader, Button } from '@gravity-ui/uikit';
 import { motion } from 'framer-motion';
 import './Dashboard.css';
+
+// Componente para cargar datos individuales de cada Pokémon en la grilla de manera diferida y segura
+function PokemonCardLoader({ name, onClick }) {
+  const { pokemon, isLoading, isError } = usePokemonDetails(name);
+
+  if (isError) {
+    // Fallback: Si falla la carga de detalles, renderizamos la tarjeta básica sin tipo
+    const fallbackPokemon = { name };
+    return <PokemonCard pokemon={fallbackPokemon} onClick={onClick} />;
+  }
+
+  if (isLoading || !pokemon) {
+    return (
+      <div className="pokemon-card-skeleton">
+        <Card className="skeleton-inner" theme="normal" view="raised">
+          <div className="skeleton-image pulse" />
+          <div className="skeleton-title pulse" />
+          <div className="skeleton-badges">
+            <div className="skeleton-badge pulse" />
+            <div className="skeleton-badge pulse" />
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  return <PokemonCard pokemon={pokemon} onClick={onClick} />;
+}
 
 export default function Dashboard() {
   const { pokemones, isLoading } = usePokemonList();
   const { theme } = usePokemonTheme();
   const [searchTerm, setSearchTerm] = useState('');
-  const [itemsToShow, setItemsToShow] = useState(48); // Inicial de 48 para rapidez de renderizado y mantener FPS
+  const [itemsToShow, setItemsToShow] = useState(24); // Inicial de 24 para rapidez de renderizado y tipo coloreado
   const navigate = useNavigate();
 
   const filteredPokemones = pokemones.filter((p) =>
@@ -28,7 +56,7 @@ export default function Dashboard() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && itemsToShow < filteredPokemones.length) {
-          setItemsToShow((prev) => prev + 48);
+          setItemsToShow((prev) => prev + 24);
         }
       },
       { threshold: 0.1 }
@@ -134,8 +162,8 @@ export default function Dashboard() {
                   transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                   className="grid-item"
                 >
-                  <PokemonCard 
-                    pokemon={p} 
+                  <PokemonCardLoader 
+                    name={p.name} 
                     onClick={handleSelectPokemon} 
                   />
                 </motion.div>
