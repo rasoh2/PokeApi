@@ -29,6 +29,128 @@ const TYPE_EFFECTIVENESS = {
   normal: { rock: 0.5, steel: 0.5, ghost: 0 }
 };
 
+// Retro sound effects synthesis via Web Audio API
+const playSoundType = (type) => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    if (type === 'hit') {
+      // Normal tackle/impact sound
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.12);
+      
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } else if (type === 'special') {
+      // Powerful special blast sound
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(250, ctx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(650, ctx.currentTime + 0.25);
+      
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(120, ctx.currentTime);
+      osc2.frequency.linearRampToValueAtTime(40, ctx.currentTime + 0.25);
+      
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+      
+      osc1.start();
+      osc2.start();
+      osc1.stop(ctx.currentTime + 0.25);
+      osc2.stop(ctx.currentTime + 0.25);
+    } else if (type === 'dodge') {
+      // Fast pitch slide up
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(280, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(850, ctx.currentTime + 0.18);
+      
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 0.18);
+    } else if (type === 'miss') {
+      // Low buzz sound
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(90, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(50, ctx.currentTime + 0.15);
+      
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } else if (type === 'victory') {
+      // Short victory fan-fare
+      const playNote = (freq, time, duration) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, time);
+        
+        gain.gain.setValueAtTime(0.08, time);
+        gain.gain.linearRampToValueAtTime(0.01, time + duration);
+        
+        osc.start(time);
+        osc.stop(time + duration);
+      };
+      
+      const now = ctx.currentTime;
+      playNote(523.25, now, 0.12); // C5
+      playNote(659.25, now + 0.12, 0.12); // E5
+      playNote(783.99, now + 0.24, 0.12); // G5
+      playNote(1046.50, now + 0.36, 0.35); // C6
+    }
+  } catch (e) {
+    console.warn('Web Audio synthesis not supported or blocked:', e);
+  }
+};
+
+// Helper for extracting random moves from Pokémon details
+const getRandomMove = (pokemonDetail, isSpecial) => {
+  if (!pokemonDetail || !pokemonDetail.moves || pokemonDetail.moves.length === 0) {
+    return isSpecial ? "Super Rayo" : "Placaje";
+  }
+  const movesList = pokemonDetail.moves;
+  const randomIndex = Math.floor(Math.random() * movesList.length);
+  const rawName = movesList[randomIndex].move.name;
+  return rawName
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 // Componente para buscar y cargar detalles de un Pokémon en un slot
 function FighterSelector({ label, onSelect, selectedPokemon, currentHp, maxHp, status, side }) {
   const { pokemones, isLoading: isListLoading } = usePokemonList();
@@ -127,29 +249,29 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
   let animateProps = { scale: 1, x: 0, y: 0, opacity: 1, filter: "none" };
   if (status === 'attacking') {
     animateProps = {
-      x: side === 'left' ? 55 : -55,
-      scale: 1.06,
-      transition: { type: 'spring', stiffness: 400, damping: 12 }
+      x: side === 'left' ? 65 : -65,
+      scale: 1.08,
+      transition: { type: 'spring', stiffness: 350, damping: 10 }
     };
   } else if (status === 'hit') {
     animateProps = {
-      x: [0, -10, 10, -10, 10, 0],
-      scale: [1, 0.94, 1],
-      transition: { duration: 0.3 }
+      x: [0, -12, 12, -12, 12, 0],
+      scale: [1, 0.92, 1],
+      transition: { duration: 0.4, ease: "easeInOut" }
     };
   } else if (status === 'dodging') {
     animateProps = {
-      y: -30,
-      x: side === 'left' ? -20 : 20,
-      scale: 0.96,
-      transition: { type: 'spring', stiffness: 220, damping: 10 }
+      y: [-45, 0],
+      x: side === 'left' ? [-30, 0] : [30, 0],
+      scale: [0.94, 1],
+      transition: { duration: 0.5, ease: "easeOut" }
     };
   } else if (status === 'defeated') {
     animateProps = {
-      opacity: 1,
+      opacity: 0.85,
       scale: 0.92,
-      filter: "grayscale(0.9) brightness(0.75)",
-      transition: { duration: 0.5 }
+      filter: "grayscale(0.8) sepia(0.2) brightness(0.85)",
+      transition: { duration: 0.6 }
     };
   }
 
@@ -167,16 +289,16 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
           <motion.div 
             className="damage-flash-overlay"
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.6, 0] }}
+            animate={{ opacity: [0, 0.8, 0] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4 }}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: '#ef5350',
+              backgroundColor: '#ff1744',
               borderRadius: '16px',
               zIndex: 10,
               pointerEvents: 'none'
@@ -191,16 +313,16 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
           <motion.div 
             className="dodge-flash-overlay"
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.5, 0] }}
+            animate={{ opacity: [0, 0.7, 0] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
+            transition={{ duration: 0.4 }}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: '#80deea',
+              backgroundColor: '#00e5ff',
               borderRadius: '16px',
               zIndex: 10,
               pointerEvents: 'none'
@@ -208,6 +330,32 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
           />
         )}
       </AnimatePresence>
+
+      {/* K.O. Stamp Overlay */}
+      {status === 'defeated' && (
+        <div 
+          style={{
+            position: 'absolute',
+            top: '40%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) rotate(-12deg)',
+            backgroundColor: 'rgba(239, 83, 80, 0.95)',
+            color: '#fff',
+            padding: '6px 14px',
+            borderRadius: '6px',
+            fontWeight: '900',
+            fontSize: '1.5rem',
+            border: '3px solid #fff',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
+            zIndex: 15,
+            pointerEvents: 'none',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+          }}
+        >
+          K.O.
+        </div>
+      )}
 
       <img src={imageUrl} alt={name} className="fighter-img" />
       <h4 className="fighter-name">{name}</h4>
@@ -221,7 +369,7 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
             className="fighter-hp-bar-inner"
             initial={{ width: '100%' }}
             animate={{ width: `${pct}%` }}
-            transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+            transition={{ type: 'spring', stiffness: 60, damping: 14 }}
             style={{ backgroundColor: healthBarColor }}
           />
         </div>
@@ -329,6 +477,8 @@ export default function BattleSimulator() {
         setBattleLog([...log]);
         setBattleRunning(false);
 
+        playSoundType('victory'); // Sonido de victoria retro
+
         confetti({
           particleCount: 110,
           spread: 75,
@@ -337,66 +487,113 @@ export default function BattleSimulator() {
         return;
       }
 
-      // Restablecer estados del turno anterior
+      // Restablecer estados del turno anterior a idle
       setStatusA('idle');
       setStatusB('idle');
 
+      // Fase 1: El atacante inicia la embestida (Lunge Phase)
       setTimeout(() => {
         if (turn === 0) {
-          // Ataca A, defiende B
-          const speedA = detailA.stats[5].base_stat;
-          const speedB = detailB.stats[5].base_stat;
-          const speedRatio = speedB / (speedA || 1);
-          const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
-          const isDodged = Math.random() < dodgeProb;
-
           setStatusA('attacking');
-          
-          if (isDodged) {
-            setStatusB('dodging');
-            log.push(`💨 ¡${detailB.name} esquivó velozmente el ataque de ${detailA.name}!`);
-          } else {
-            setStatusB('hit');
-            const dmg = Math.max(1, Math.round(((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA));
-            currentHpValB = Math.max(0, currentHpValB - dmg);
-            setHpB(currentHpValB);
-            log.push(`⚔️ ${detailA.name} embiste a ${detailB.name} causando ${dmg} daño.`);
-          }
         } else {
-          // Ataca B, defiende A
-          const speedA = detailA.stats[5].base_stat;
-          const speedB = detailB.stats[5].base_stat;
-          const speedRatio = speedA / (speedB || 1);
-          const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
-          const isDodged = Math.random() < dodgeProb;
-
           setStatusB('attacking');
-
-          if (isDodged) {
-            setStatusA('dodging');
-            log.push(`💨 ¡${detailA.name} esquivó velozmente el ataque de ${detailB.name}!`);
-          } else {
-            setStatusA('hit');
-            const dmg = Math.max(1, Math.round(((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB));
-            currentHpValA = Math.max(0, currentHpValA - dmg);
-            setHpA(currentHpValA);
-            log.push(`⚔️ ${detailB.name} embiste a ${detailA.name} causando ${dmg} daño.`);
-          }
         }
 
-        setBattleLog([...log]);
-
-        // Esperar a que la animación física de golpe/esquiva (~350ms) termine para restablecer a idle
+        // Fase 2: El ataque impacta o es esquivado/fallado tras 380ms
         setTimeout(() => {
-          if (currentHpValA > 0 && currentHpValB > 0) {
-            setStatusA('idle');
-            setStatusB('idle');
+          const isSpecial = Math.random() < 0.25; // 25% de probabilidad de ataque especial
+
+          if (turn === 0) {
+            // Ataca A, defiende B
+            const speedA = detailA.stats[5].base_stat;
+            const speedB = detailB.stats[5].base_stat;
+            const speedRatio = speedB / (speedA || 1);
+            const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
+            const isDodged = Math.random() < dodgeProb;
+            const isMissed = !isDodged && Math.random() < 0.12; // 12% probabilidad base de fallar
+
+            setStatusA('idle'); // El atacante regresa a su posicion
+
+            if (isDodged) {
+              setStatusB('dodging');
+              playSoundType('dodge');
+              log.push(`💨 ¡${detailB.name} esquivó velozmente el ataque de ${detailA.name}!`);
+            } else if (isMissed) {
+              playSoundType('miss');
+              log.push(`❌ ¡El ataque de ${detailA.name} falló y no alcanzó a ${detailB.name}!`);
+            } else {
+              setStatusB('hit');
+              const moveName = getRandomMove(detailA, isSpecial);
+              
+              if (isSpecial) {
+                playSoundType('special');
+                // Ataque especial inflige el doble de daño para combates más rápidos y emocionantes
+                const dmg = Math.max(2, Math.round((((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA) * 2.0));
+                currentHpValB = Math.max(0, currentHpValB - dmg);
+                setHpB(currentHpValB);
+                log.push(`💥 ¡ATAQUE ESPECIAL! ¡${detailA.name} desata ${moveName} infligiendo ${dmg} daño devastador!`);
+              } else {
+                playSoundType('hit');
+                const dmg = Math.max(1, Math.round(((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA));
+                currentHpValB = Math.max(0, currentHpValB - dmg);
+                setHpB(currentHpValB);
+                log.push(`⚔️ ${detailA.name} usa ${moveName} y causa ${dmg} daño.`);
+              }
+            }
+          } else {
+            // Ataca B, defiende A
+            const speedA = detailA.stats[5].base_stat;
+            const speedB = detailB.stats[5].base_stat;
+            const speedRatio = speedA / (speedB || 1);
+            const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
+            const isDodged = Math.random() < dodgeProb;
+            const isMissed = !isDodged && Math.random() < 0.12;
+
+            setStatusB('idle'); // El atacante regresa a su posicion
+
+            if (isDodged) {
+              setStatusA('dodging');
+              playSoundType('dodge');
+              log.push(`💨 ¡${detailA.name} esquivó velozmente el ataque de ${detailB.name}!`);
+            } else if (isMissed) {
+              playSoundType('miss');
+              log.push(`❌ ¡El ataque de ${detailB.name} falló y no alcanzó a ${detailA.name}!`);
+            } else {
+              setStatusA('hit');
+              const moveName = getRandomMove(detailB, isSpecial);
+
+              if (isSpecial) {
+                playSoundType('special');
+                // Ataque especial inflige el doble de daño
+                const dmg = Math.max(2, Math.round((((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB) * 2.0));
+                currentHpValA = Math.max(0, currentHpValA - dmg);
+                setHpA(currentHpValA);
+                log.push(`💥 ¡ATAQUE ESPECIAL! ¡${detailB.name} desata ${moveName} infligiendo ${dmg} daño devastador!`);
+              } else {
+                playSoundType('hit');
+                const dmg = Math.max(1, Math.round(((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB));
+                currentHpValA = Math.max(0, currentHpValA - dmg);
+                setHpA(currentHpValA);
+                log.push(`⚔️ ${detailB.name} usa ${moveName} y causa ${dmg} daño.`);
+              }
+            }
           }
-          
-          turn = 1 - turn;
-          // Próximo turno en 400ms (combate ágil: total ~800ms por acción)
-          setTimeout(runTurn, 400);
-        }, 350);
+
+          setBattleLog([...log]);
+
+          // Fase 3: Recuperación del defensor a idle (esperar a que terminen de destellar/saltar)
+          setTimeout(() => {
+            if (currentHpValA > 0 && currentHpValB > 0) {
+              setStatusA('idle');
+              setStatusB('idle');
+            }
+
+            // Próximo turno en 380ms
+            turn = 1 - turn;
+            setTimeout(runTurn, 380);
+          }, 480);
+
+        }, 380);
 
       }, 50);
     };

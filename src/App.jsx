@@ -9,12 +9,14 @@ import BattleSimulator from "./components/BattleSimulator";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import NotFound from "./components/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <ThemeProvider theme="dark">
       <PokemonThemeProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <div className='container-app'>
             <NavBar />
             <Routes>

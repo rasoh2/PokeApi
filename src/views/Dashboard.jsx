@@ -40,38 +40,12 @@ export default function Dashboard() {
   const { pokemones, isLoading } = usePokemonList();
   const { theme } = usePokemonTheme();
   const [searchTerm, setSearchTerm] = useState('');
-  const [itemsToShow, setItemsToShow] = useState(24); // Inicial de 24 para rapidez de renderizado y tipo coloreado
+  const [itemsToShow, setItemsToShow] = useState(50); // Muestra 50 inicialmente
   const navigate = useNavigate();
 
   const filteredPokemones = pokemones.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const loaderRef = useRef(null);
-
-  // Cargar más de 48 en 48 de forma local instantánea al hacer scroll usando Intersection Observer
-  useEffect(() => {
-    if (isLoading || filteredPokemones.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && itemsToShow < filteredPokemones.length) {
-          setItemsToShow((prev) => prev + 24);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
-      }
-    };
-  }, [isLoading, filteredPokemones.length, itemsToShow]);
 
   const handleSelectPokemon = (name) => {
     navigate(`/gallery/${name}`);
@@ -170,11 +144,20 @@ export default function Dashboard() {
               ))}
             </motion.div>
 
-            {/* Indicador de carga al final del scroll */}
+            {/* Botón para cargar más Pokémon */}
             {itemsToShow < filteredPokemones.length && (
-              <div className="scroll-observer" ref={loaderRef}>
-                <Loader size="m" />
-                <span className="observer-text">Cargando más criaturas...</span>
+              <div className="load-more-container text-center my-5">
+                <Button 
+                  size="xl" 
+                  view="action" 
+                  className="load-more-btn"
+                  onClick={() => setItemsToShow((prev) => prev + 100)}
+                >
+                  📥 Cargar próximos 100 Pokémon
+                </Button>
+                <p className="load-more-info mt-2 text-white-50">
+                  Mostrando {Math.min(itemsToShow, filteredPokemones.length)} de {filteredPokemones.length} criaturas
+                </p>
               </div>
             )}
           </div>

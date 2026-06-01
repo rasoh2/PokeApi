@@ -740,5 +740,49 @@
   }
 }
 
+/* --- MOBILE RESPONSIVENESS OVERRIDES --- */
+@media (max-width: 576px) {
+  .detail-content {
+    padding-top: 80px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .pokemon-large-card {
+    padding: 16px 12px;
+  }
+  .pokemon-large-name {
+    font-size: 1.8rem;
+  }
+  .pokemon-large-number {
+    font-size: 4rem;
+    right: 12px;
+    top: 6px;
+  }
+  .artwork-stage {
+    height: 180px;
+    margin-bottom: 12px;
+  }
+  .detail-section-card {
+    padding: 16px 12px !important;
+  }
+  .physical-row {
+    padding: 12px 6px;
+  }
+  .phys-value {
+    font-size: 1rem;
+  }
+  .stat-progress-label {
+    width: 90px;
+    font-size: 0.75rem;
+  }
+  .abilities-flex {
+    gap: 8px;
+  }
+  .ability-card {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
 
 
