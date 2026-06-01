@@ -1,0 +1,239 @@
+.dashboard-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #15161e 0%, #0d0e12 100%);
+  padding-bottom: 80px;
+  overflow-x: hidden;
+}
+
+.shiny-switch-floating {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.shiny-btn {
+  background: var(--shiny-holo-gradient) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  border: 1px solid var(--shiny-gold-primary) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3) !important;
+}
+
+.shiny-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4) !important;
+}
+
+.dashboard-content {
+  padding-top: 120px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  font-family: var(--font-family);
+  letter-spacing: -1px;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.main-title span {
+  background: linear-gradient(90deg, #ff5252, #ffd54f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.search-section {
+  margin-top: 32px;
+}
+
+/* Banner de Batalla CTA */
+.battle-cta-banner {
+  margin-bottom: 48px;
+  padding: 24px 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.battle-cta-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 10% 20%, rgba(239, 83, 80, 0.15) 0%, transparent 60%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.battle-cta-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.battle-cta-text h3 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  font-family: var(--font-family);
+}
+
+.battle-cta-text p {
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+.go-battle-btn {
+  background: linear-gradient(135deg, #ef5350 0%, #e53935 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+/* Grilla Pokémon Asimétrica */
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+  grid-auto-flow: dense;
+}
+
+@media (min-width: 768px) {
+  /* Asimetría de grid */
+  .grid-item.large-item {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-family);
+}
+
+.section-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 24px;
+  font-family: var(--font-family);
+  border-left: 4px solid #ff5252;
+  padding-left: 12px;
+}
+
+/* Skeletons */
+.pokemon-card-skeleton {
+  width: 100%;
+  aspect-ratio: 2 / 2.8;
+}
+
+.skeleton-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pulse {
+  animation: pulse-loading 1.5s infinite ease-in-out;
+}
+
+.skeleton-image {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-badges {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.skeleton-badge {
+  width: 60px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes pulse-loading {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Scroll Observador */
+.scroll-observer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  gap: 12px;
+}
+
+.observer-text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-family);
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+}

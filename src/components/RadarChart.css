@@ -1,0 +1,66 @@
+.radar-chart-wrapper {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.radar-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.radar-grid-line {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.radar-axis {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-dasharray: 2 2;
+  stroke-width: 1;
+}
+
+.radar-polygon {
+  fill: rgba(255, 82, 82, 0.25);
+  stroke: #ff5252;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(255, 82, 82, 0.5));
+}
+
+/* En el modo Shiny, cambiamos la estética del radar a oro holográfico */
+.shiny-theme-active .radar-polygon {
+  fill: rgba(255, 215, 0, 0.25);
+  stroke: #ffd700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+}
+
+.radar-vertex {
+  fill: #ff5252;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px rgba(255, 82, 82, 0.6));
+}
+
+.shiny-theme-active .radar-vertex {
+  fill: #ffd700;
+  stroke: #0d0b01;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
+}
+
+.radar-label {
+  font-family: var(--font-family);
+  font-size: 8.5px;
+  fill: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.shiny-theme-active .radar-label {
+  fill: rgba(255, 251, 235, 0.85);
+}

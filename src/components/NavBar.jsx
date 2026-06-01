@@ -54,6 +54,17 @@ const NavBar = () => {
                 Pokédex
               </NavLink>
             </li>
+            <li className='nav-item mx-2'>
+              <NavLink
+                to='/battle'
+                className={({ isActive }) =>
+                  isActive ? "nav-link px-3 py-2 active" : "nav-link px-3 py-2"
+                }
+              >
+                <i className='fas fa-gamepad me-2'></i>
+                Arena
+              </NavLink>
+            </li>
             <li className='nav-item ms-3'>
               <div className='nav-badge'>
                 <i className='fas fa-database text-warning'></i>

@@ -1,3 +1,5 @@
+@import "./assets/css/variables.css";
+
 :root {
   --pokemon-red: #dc0a2d;
   --pokemon-white: #ffffff;

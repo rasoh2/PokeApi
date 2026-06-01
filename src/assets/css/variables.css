@@ -1,0 +1,136 @@
+:root {
+  /* Pokémon Types Hex Colors */
+  --color-type-normal: #A8A878;
+  --color-type-fire: #F08030;
+  --color-type-water: #6890F0;
+  --color-type-grass: #78C850;
+  --color-type-electric: #F8D030;
+  --color-type-ice: #98D8D8;
+  --color-type-fighting: #C03028;
+  --color-type-poison: #A040A0;
+  --color-type-ground: #E0C068;
+  --color-type-flying: #A890F0;
+  --color-type-psychic: #F85888;
+  --color-type-bug: #A8B820;
+  --color-type-rock: #B8A038;
+  --color-type-ghost: #705898;
+  --color-type-dragon: #7038F8;
+  --color-type-steel: #B8B8D0;
+  --color-type-fairy: #EE99AC;
+  --color-type-dark: #705848;
+
+  /* Pokémon Gradients */
+  --gradient-type-normal: linear-gradient(135deg, #A8A878 0%, #8A8A59 100%);
+  --gradient-type-fire: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+  --gradient-type-water: linear-gradient(135deg, #4FC3F7 0%, #2196F3 100%);
+  --gradient-type-grass: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
+  --gradient-type-electric: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+  --gradient-type-ice: linear-gradient(135deg, #81D4FA 0%, #4FC3F7 100%);
+  --gradient-type-fighting: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+  --gradient-type-poison: linear-gradient(135deg, #AB47BC 0%, #8E24AA 100%);
+  --gradient-type-ground: linear-gradient(135deg, #FFD54F 0%, #FBC02D 100%);
+  --gradient-type-flying: linear-gradient(135deg, #9FA8DA 0%, #7986CB 100%);
+  --gradient-type-psychic: linear-gradient(135deg, #F48FB1 0%, #EC407A 100%);
+  --gradient-type-bug: linear-gradient(135deg, #AED581 0%, #9CCC65 100%);
+  --gradient-type-rock: linear-gradient(135deg, #A1887F 0%, #8D6E63 100%);
+  --gradient-type-ghost: linear-gradient(135deg, #9575CD 0%, #7E57C2 100%);
+  --gradient-type-dragon: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%);
+  --gradient-type-steel: linear-gradient(135deg, #90CAF9 0%, #64B5F6 100%);
+  --gradient-type-fairy: linear-gradient(135deg, #F8BBD0 0%, #F48FB1 100%);
+  --gradient-type-dark: linear-gradient(135deg, #8D6E63 0%, #6D4C41 100%);
+
+  /* Design Tokens */
+  --font-family: 'Outfit', 'Poppins', sans-serif;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-blur: blur(12px);
+
+  /* Shiny / Golden Holographic Theme */
+  --shiny-gold-primary: #ffd700;
+  --shiny-gold-secondary: #b8860b;
+  --shiny-holo-gradient: linear-gradient(
+    135deg,
+    #ffe259 0%,
+    #ffa751 25%,
+    #ffffd0 50%,
+    #ffa751 75%,
+    #ffe259 100%
+  );
+  --shiny-border: linear-gradient(45deg, #ffd700, #ff007f, #00f0ff, #ffd700);
+}
+
+/* Shiny holographic animations and global triggers */
+.shiny-theme-active {
+  --g-color-text-primary: #fffbeb !important;
+  --g-color-base-background: #0d0b01 !important;
+  --g-color-line-border: rgba(255, 215, 0, 0.3) !important;
+  
+  background: radial-gradient(circle at 50% 50%, #1c1802 0%, #080701 100%) !important;
+}
+
+.shiny-theme-active .container-app {
+  border: 2px solid var(--shiny-gold-primary);
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+}
+
+/* Mesh Gradient for Detail View background */
+.mesh-gradient-bg {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: #0b0c10;
+  z-index: 1;
+}
+
+.mesh-gradient-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.45;
+  filter: blur(100px);
+  z-index: -1;
+  background-image: 
+    radial-gradient(at 10% 20%, var(--mesh-color-1, #ff5252) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, var(--mesh-color-2, #ffd54f) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, var(--mesh-color-3, #4fc3f7) 0px, transparent 50%),
+    radial-gradient(at 80% 90%, var(--mesh-color-1, #ff5252) 0px, transparent 50%);
+  animation: mesh-flow 20s ease infinite alternate;
+}
+
+@keyframes mesh-flow {
+  0% {
+    transform: scale(1) translate(0px, 0px);
+  }
+  50% {
+    transform: scale(1.1) translate(20px, -30px);
+  }
+  100% {
+    transform: scale(0.95) translate(-10px, 15px);
+  }
+}
+
+/* Shine sparkle animations */
+.shiny-sparkle {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+  animation: sparkle-anim 0.8s ease-out forwards;
+}
+
+@keyframes sparkle-anim {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+    opacity: 0;
+  }
+}

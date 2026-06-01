@@ -1,0 +1,147 @@
+.evolution-chain-container {
+  width: 100%;
+  margin-top: 32px;
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.evolution-flow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.evo-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  width: 100px;
+}
+
+.evo-node:hover:not(.current-node) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 82, 82, 0.3);
+  transform: translateY(-4px);
+}
+
+.current-node {
+  border-color: #ff5252;
+  background: rgba(255, 82, 82, 0.08);
+  cursor: default;
+}
+
+.shiny-theme-active .current-node {
+  border-color: var(--shiny-gold-primary);
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.evo-image-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.evo-pokemon-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.evo-name {
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  font-weight: 700;
+  color: #fff;
+  font-family: var(--font-family);
+}
+
+.evo-id {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-family);
+  margin-top: 2px;
+}
+
+.evo-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  user-select: none;
+}
+
+.connector-arrow {
+  display: inline-block;
+  color: #ffc107;
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}
+
+.evo-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 0;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.evo-no-chain {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+  padding: 16px 0;
+  font-family: var(--font-family);
+}
+
+/* Efecto de destello clásico de evolución */
+.evolving-flash {
+  animation: shake 0.15s infinite;
+}
+
+.evolution-light-flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 10;
+  animation: flash-anim 0.8s ease-out forwards;
+}
+
+@keyframes flash-anim {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+    filter: brightness(2);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px) rotate(-1deg); }
+  75% { transform: translateX(4px) rotate(1deg); }
+}

@@ -1,0 +1,151 @@
+.predictive-search-container {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+  z-index: 100;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.gravity-search-input {
+  width: 100%;
+}
+
+.gravity-search-input input {
+  font-family: var(--font-family) !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  padding-left: 20px !important;
+  border-radius: 30px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  color: #fff !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease !important;
+}
+
+.gravity-search-input input:focus {
+  border-color: #ff5252 !important;
+  box-shadow: 0 0 15px rgba(255, 82, 82, 0.3), inset 0 2px 4px rgba(0,0,0,0.2) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.pokeball-search-icon {
+  position: absolute;
+  right: 15px;
+  font-size: 1.3rem;
+  pointer-events: none;
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  right: 0;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  background: rgba(20, 20, 25, 0.95);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+.dropdown-header {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+}
+
+.silhouette-container {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.suggestion-pokemon-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+/* Silueta ("¿Quién es ese Pokémon?") */
+.silhouette {
+  filter: brightness(0) invert(1) opacity(0.3); /* Silueta blanca translúcida en modo oscuro */
+}
+
+.suggestion-item:hover .silhouette {
+  filter: none; /* Revelar color */
+  transform: scale(1.15) rotate(5deg);
+}
+
+.suggestion-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestion-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: capitalize;
+  font-family: var(--font-family);
+}
+
+.suggestion-id {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-family);
+  margin-top: 2px;
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(15deg);
+  }
+}

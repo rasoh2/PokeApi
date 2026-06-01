@@ -1,0 +1,246 @@
+.battle-arena-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #0d0c1b 0%, #05050f 100%);
+  padding-bottom: 80px;
+  color: #fff;
+}
+
+.arena-header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-top: 100px;
+}
+
+.arena-title {
+  font-size: 3rem;
+  font-weight: 900;
+  font-family: var(--font-family);
+  margin-top: 16px;
+  background: linear-gradient(90deg, #ef5350, #ffb300);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.arena-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.arena-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .arena-grid {
+    grid-template-columns: 5fr 2fr 5fr;
+  }
+}
+
+.arena-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 32px;
+  min-height: 400px;
+  backdrop-filter: blur(10px);
+}
+
+.slot-heading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 20px;
+  font-family: var(--font-family);
+}
+
+.fighter-selector {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.selector-input-container {
+  width: 100%;
+  position: relative;
+}
+
+.fighter-suggestions-list {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  right: 0;
+  background: #0d0c1b;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.fighter-suggestion-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  text-transform: capitalize;
+  font-family: var(--font-family);
+  transition: background 0.2s ease;
+}
+
+.fighter-suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Tarjeta del Luchador */
+.fighter-card {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 2 / 2.8;
+  border-radius: 16px;
+  background: var(--card-bg-gradient, linear-gradient(135deg, #2d2d2d, #1f1f1f));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.fighter-card-skeleton {
+  width: 180px;
+  height: 220px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fighter-img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+}
+
+.fighter-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: #fff;
+  margin: 12px 0 6px 0;
+  font-family: var(--font-family);
+}
+
+.fighter-type-badge {
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.fighter-stat-snippet {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-family);
+  margin-top: 6px;
+}
+
+/* VS Divider */
+.vs-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.vs-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  border: 4px solid #05050f;
+  color: #fff;
+  font-weight: 900;
+  font-family: var(--font-family);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 0 20px rgba(255, 82, 82, 0.4);
+}
+
+.simulate-btn {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3) !important;
+}
+
+.simulate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 193, 7, 0.4) !important;
+}
+
+/* Registro de Turnos */
+.battle-log-panel {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(5, 5, 15, 0.7) !important;
+  padding: 24px;
+  box-shadow: var(--glass-shadow);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.log-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  font-family: var(--font-family);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.log-entries {
+  max-height: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 10px;
+}
+
+.log-entry {
+  font-size: 0.95rem;
+  font-family: var(--font-family);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.winner-entry {
+  font-weight: 700;
+  color: #ffc107;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}

@@ -1,0 +1,146 @@
+.pokemon-card-3d-wrapper {
+  perspective: 1000px;
+  cursor: pointer;
+  width: 100%;
+  aspect-ratio: 2 / 2.8;
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+.pokemon-gravity-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px !important;
+  overflow: hidden;
+  position: relative;
+  background: var(--card-bg-gradient, linear-gradient(135deg, #2d2d2d, #1f1f1f)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+.pokemon-card-3d-wrapper:hover .pokemon-gravity-card {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  pointer-events: none;
+  mix-blend-mode: color-dodge;
+}
+
+.card-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  position: relative;
+}
+
+.pokemon-bg-number {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.035);
+  font-family: 'Outfit', sans-serif;
+  user-select: none;
+  pointer-events: none;
+}
+
+.pokemon-artwork-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.35));
+  transition: transform 0.2s ease;
+}
+
+.pokemon-card-3d-wrapper:hover .pokemon-artwork-container {
+  transform: translateZ(40px) scale(1.05);
+}
+
+.pokemon-artwork {
+  width: 85%;
+  height: 140px;
+  object-fit: contain;
+}
+
+.pokemon-info {
+  text-align: center;
+}
+
+.pokemon-name-title {
+  font-size: 1.35rem;
+  text-transform: capitalize;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.type-badge-container {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.type-badge-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Colores Temáticos por Tipo */
+.type-normal { --card-bg-gradient: var(--gradient-type-normal); --glow-color: var(--color-type-normal); }
+.type-fire { --card-bg-gradient: var(--gradient-type-fire); --glow-color: var(--color-type-fire); }
+.type-water { --card-bg-gradient: var(--gradient-type-water); --glow-color: var(--color-type-water); }
+.type-grass { --card-bg-gradient: var(--gradient-type-grass); --glow-color: var(--color-type-grass); }
+.type-electric { --card-bg-gradient: var(--gradient-type-electric); --glow-color: var(--color-type-electric); }
+.type-ice { --card-bg-gradient: var(--gradient-type-ice); --glow-color: var(--color-type-ice); }
+.type-fighting { --card-bg-gradient: var(--gradient-type-fighting); --glow-color: var(--color-type-fighting); }
+.type-poison { --card-bg-gradient: var(--gradient-type-poison); --glow-color: var(--color-type-poison); }
+.type-ground { --card-bg-gradient: var(--gradient-type-ground); --glow-color: var(--color-type-ground); }
+.type-flying { --card-bg-gradient: var(--gradient-type-flying); --glow-color: var(--color-type-flying); }
+.type-psychic { --card-bg-gradient: var(--gradient-type-psychic); --glow-color: var(--color-type-psychic); }
+.type-bug { --card-bg-gradient: var(--gradient-type-bug); --glow-color: var(--color-type-bug); }
+.type-rock { --card-bg-gradient: var(--gradient-type-rock); --glow-color: var(--color-type-rock); }
+.type-ghost { --card-bg-gradient: var(--gradient-type-ghost); --glow-color: var(--color-type-ghost); }
+.type-dragon { --card-bg-gradient: var(--gradient-type-dragon); --glow-color: var(--color-type-dragon); }
+.type-steel { --card-bg-gradient: var(--gradient-type-steel); --glow-color: var(--color-type-steel); }
+.type-fairy { --card-bg-gradient: var(--gradient-type-fairy); --glow-color: var(--color-type-fairy); }
+.type-dark { --card-bg-gradient: var(--gradient-type-dark); --glow-color: var(--color-type-dark); }
+.type-default { --card-bg-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%); --glow-color: rgba(255, 255, 255, 0.12); }
+
+/* Efecto Holográfico Shiny en la Tarjeta */
+.shiny-theme-active .pokemon-gravity-card {
+  background: var(--shiny-holo-gradient) !important;
+  border: 1.5px solid var(--shiny-gold-primary) !important;
+}
+
+.shiny-theme-active .pokemon-name-title {
+  color: #0d0b01;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+}
+
+.shiny-theme-active .pokemon-bg-number {
+  color: rgba(184, 134, 11, 0.1);
+}
