@@ -36,7 +36,7 @@ export function usePokemonDetails(name) {
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (parsed && parsed.types && parsed.types.length > 0) {
+          if (parsed && parsed.types && parsed.types.length > 0 && parsed.is_legendary !== undefined) {
             return parsed;
           }
         }
@@ -80,6 +80,8 @@ export function usePokemonDetails(name) {
         evolutionChainUrl: evolutionChainUrl,
         base_happiness: speciesData?.base_happiness || 70,
         capture_rate: speciesData?.capture_rate || 255,
+        is_legendary: speciesData?.is_legendary || false,
+        is_mythical: speciesData?.is_mythical || false,
       };
 
       // Guardar en caché de forma segura ante desbordamiento de cuota (QuotaExceededError)

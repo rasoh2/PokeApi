@@ -307,3 +307,438 @@
 .shiny-theme-active .section-title {
   border-bottom-color: var(--shiny-gold-primary);
 }
+
+/* --- EFECTOS AMBIENTALES DE TARJETA POR TIPO Y EVOLUCIÓN --- */
+
+.pokemon-card-ambient-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  z-index: 10;
+}
+
+/* Halo de luz (glow) de fondo */
+.pokemon-card-ambient-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -25px;
+  left: -25px;
+  right: -25px;
+  bottom: -25px;
+  background: radial-gradient(circle, var(--type-color-1, #999) 0%, transparent 70%);
+  z-index: -2;
+  opacity: 0.25;
+  filter: blur(25px);
+  border-radius: 35px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Doble gradiente en el halo de fondo para doble tipos */
+.pokemon-card-ambient-wrapper[class*="type-sec-"]::before {
+  background: radial-gradient(circle at 30% 30%, var(--type-color-1) 0%, transparent 65%),
+              radial-gradient(circle at 70% 70%, var(--type-color-2) 0%, transparent 65%) !important;
+}
+
+/* En la evolución final (final-evo), el halo es potente y late */
+.pokemon-card-ambient-wrapper.final-evo::before {
+  opacity: 0.75;
+  filter: blur(40px);
+  animation: ambient-glow-pulse 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-glow-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+/* Halo de luz intermedio (inter-evo) */
+.pokemon-card-ambient-wrapper.inter-evo::before {
+  opacity: 0.45;
+  filter: blur(32px);
+  animation: ambient-glow-pulse-inter 4s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-glow-pulse-inter {
+  0% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.04);
+    opacity: 0.55;
+  }
+}
+
+/* Contenedor de partículas */
+.ambient-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: visible;
+}
+
+/* Estilo base de partícula */
+.ambient-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Reducir intensidad de partículas en etapa básica */
+.basic-evo .ambient-particle {
+  filter: brightness(0.7) opacity(0.35) !important;
+}
+
+/* Resetear estilos cuando contienen emojis (no son vacíos) */
+.ambient-particle:not(:empty) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  text-shadow: 0 0 8px currentColor, 0 0 16px rgba(255, 255, 255, 0.4);
+}
+
+/* Estilos de partículas vacías por tipo (formas CSS) */
+.type-particle-fire {
+  background: radial-gradient(circle, #ffb74d 0%, #ff3d00 70%, transparent 100%);
+  box-shadow: 0 0 8px #ff3d00, 0 0 16px #ff9100;
+}
+
+.type-particle-water {
+  border: 1px solid rgba(135, 206, 250, 0.7);
+  background: rgba(30, 144, 255, 0.15);
+  box-shadow: 0 0 8px rgba(30, 144, 255, 0.3), inset 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.type-particle-grass {
+  background: #66bb6a;
+  border-radius: 90% 0 90% 0 !important;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+.type-particle-bug {
+  background: #9ccc65;
+  border-radius: 50% 0 50% 0 !important;
+  box-shadow: 0 0 6px rgba(156, 204, 101, 0.4);
+}
+
+.type-particle-electric {
+  background: #fff59d;
+  box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ffc107;
+  clip-path: polygon(40% 0%, 100% 40%, 55% 45%, 70% 100%, 0% 50%, 45% 40%);
+}
+
+.type-particle-ice {
+  background: #e0f7fa;
+  box-shadow: 0 0 6px #e0f7fa, 0 0 12px #80deea;
+  clip-path: polygon(50% 0%, 85% 35%, 100% 50%, 85% 65%, 50% 100%, 15% 65%, 0% 50%, 15% 35%);
+}
+
+.type-particle-poison {
+  background: radial-gradient(circle, #e1bee7 0%, #8e24aa 70%, transparent 100%);
+  box-shadow: 0 0 8px #ab47bc, 0 0 16px #4a148c;
+}
+
+.type-particle-psychic {
+  background: radial-gradient(circle, #f3e5f5 0%, #d81b60 70%, transparent 100%);
+  box-shadow: 0 0 8px #ff4081, 0 0 16px #880e4f;
+}
+
+.type-particle-ghost {
+  background: radial-gradient(circle, #d1c4e9 0%, #5e35b1 70%, transparent 100%);
+  box-shadow: 0 0 10px #7e57c2, 0 0 20px #311b92;
+}
+
+.type-particle-dark {
+  background: radial-gradient(circle, #37474f 0%, #1a1a2e 80%, transparent 100%);
+  box-shadow: 0 0 8px #000, 0 0 16px #37474f;
+}
+
+.type-particle-steel {
+  background: linear-gradient(135deg, #cfd8dc 0%, #78909c 100%);
+  box-shadow: 0 0 6px #b0bec5;
+  border-radius: 4px;
+}
+
+.type-particle-dragon {
+  background: radial-gradient(circle, #b39ddb 0%, #512da8 70%, transparent 100%);
+  box-shadow: 0 0 12px #673ab7, 0 0 24px #311b92;
+}
+
+.type-particle-fairy {
+  background: radial-gradient(circle, #f8bbd0 0%, #f06292 70%, transparent 100%);
+  box-shadow: 0 0 8px #ff4081, 0 0 16px #f8bbd0;
+}
+
+.type-particle-fighting {
+  background: radial-gradient(circle, #ffccbc 0%, #d84315 70%, transparent 100%);
+  box-shadow: 0 0 8px #ff5722;
+}
+
+.type-particle-ground {
+  background: radial-gradient(circle, #ffe082 0%, #8d6e63 80%, transparent 100%);
+  box-shadow: 0 0 8px #a1887f;
+}
+
+.type-particle-rock {
+  background: radial-gradient(circle, #d7ccc8 0%, #5d4037 80%, transparent 100%);
+  box-shadow: 0 0 6px #8d6e63;
+  border-radius: 30% 70% 70% 30% / 50% 60% 40% 50% !important;
+}
+
+.type-particle-flying {
+  background: #fff;
+  clip-path: ellipse(50% 15% at 50% 50%);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+.type-particle-normal {
+  background: radial-gradient(circle, #fff 0%, #b0bec5 70%, transparent 100%);
+  box-shadow: 0 0 6px #cfd8dc;
+}
+
+/* Partículas de Brillo (Sparkles - Estrellas Destellantes) */
+.ambient-particle.particle-sparkle {
+  background: #ffffff !important;
+  box-shadow: 0 0 10px #ffffff, 0 0 20px #ffd700 !important;
+  clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%) !important;
+}
+
+/* Partículas de Flor Rosada para Planta en fase final */
+.ambient-particle.particle-flower {
+  background: radial-gradient(circle, #ff80ab 0%, #f50057 70%, transparent 100%) !important;
+  box-shadow: 0 0 10px #ff4081, 0 0 15px rgba(255, 128, 171, 0.4) !important;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60% !important;
+}
+
+/* Posicionamiento en 3D (por delante y por detrás) */
+.ambient-particles.behind {
+  z-index: -1;
+}
+
+.ambient-particles.in-front {
+  z-index: 20;
+}
+
+/* --- REGLAS DE ETAPA 1 (BÁSICA) --- */
+.basic-evo .ambient-particle {
+  border-radius: 50% !important;
+  border: none !important;
+  clip-path: none !important;
+  filter: brightness(0.85) opacity(0.22) !important;
+  animation: basic-drift 10s infinite linear !important;
+  animation-delay: var(--delay, 0s) !important;
+  animation-duration: 9s !important;
+  text-shadow: none !important;
+}
+
+.basic-evo .ambient-particle:not(:empty) {
+  display: none !important;
+}
+
+@keyframes basic-drift {
+  0% {
+    transform: translateY(60px) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-140px) translate(var(--dx), var(--dy)) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* --- ANIMACIONES DE MOVIMIENTO --- */
+
+/* 1. Ascendentes (.anim-up) */
+.anim-up {
+  animation: move-up-ambient var(--duration, 4s) infinite linear;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes move-up-ambient {
+  0% {
+    transform: translateY(80px) translateX(0) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-240px) translate(var(--dx, 20px), var(--dy, -40px)) scale(1.2) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* 2. Descendentes (.anim-down) */
+.anim-down {
+  animation: move-down-ambient var(--duration, 5s) infinite ease-in-out;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes move-down-ambient {
+  0% {
+    transform: translateY(-60px) translateX(0) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(280px) translate(var(--dx, -20px), var(--dy, 40px)) scale(1.1) rotate(270deg);
+    opacity: 0;
+  }
+}
+
+/* 3. Destellos Estáticos (.anim-flash) */
+.anim-flash {
+  animation: flash-ambient var(--duration, 3.5s) infinite ease-in-out;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes flash-ambient {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  10%, 90% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translate(var(--dx, 5px), var(--dy, -5px)) rotate(35deg);
+  }
+}
+
+/* 4. Espirales para Doble Tipo en Stage 3 (.anim-spiral-cw y .anim-spiral-ccw) */
+.anim-spiral-cw {
+  animation: spiral-cw-ambient var(--duration, 6.5s) infinite linear;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes spiral-cw-ambient {
+  0% {
+    transform: rotate(0deg) translateY(120px) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(360deg) translateY(220px) rotate(-360deg) scale(1.25);
+    opacity: 0;
+  }
+}
+
+.anim-spiral-ccw {
+  animation: spiral-ccw-ambient var(--duration, 6.5s) infinite linear;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes spiral-ccw-ambient {
+  0% {
+    transform: rotate(360deg) translateY(120px) rotate(-360deg) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(0deg) translateY(220px) rotate(0deg) scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* --- CATEGORÍA ESPECIAL: POKÉMON LEGENDARIOS --- */
+
+.pokemon-card-ambient-wrapper.legendary::before {
+  background: radial-gradient(circle at 30% 30%, #ffd700 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, #8e24aa 0%, transparent 50%),
+              radial-gradient(circle at 50% 80%, #00e5ff 0%, transparent 50%) !important;
+  opacity: 0.85 !important;
+  filter: blur(45px) !important;
+  animation: legendary-glow-pulse 6s ease-in-out infinite alternate !important;
+}
+
+.pokemon-card-ambient-wrapper.legendary::after {
+  content: "";
+  position: absolute;
+  top: -24px;
+  left: -24px;
+  right: -24px;
+  bottom: -24px;
+  border: 3px solid transparent;
+  background: linear-gradient(90deg, #ffd700, #ff007f, #00e5ff, #ffd700) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  border-radius: 28px;
+  z-index: 5;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 10px #ffd700);
+  animation: legendary-border-rotate 8s linear infinite;
+  pointer-events: none;
+}
+
+.legendary .ambient-particle {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) !important;
+}
+
+@keyframes legendary-glow-pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.12) rotate(180deg);
+    opacity: 0.95;
+    filter: blur(55px);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.65;
+  }
+}
+
+@keyframes legendary-border-rotate {
+  0% {
+    filter: hue-rotate(0deg) drop-shadow(0 0 8px #ffd700);
+  }
+  100% {
+    filter: hue-rotate(360deg) drop-shadow(0 0 16px #ffd700);
+  }
+}
+
+
+

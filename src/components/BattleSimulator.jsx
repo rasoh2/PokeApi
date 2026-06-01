@@ -30,7 +30,7 @@ const TYPE_EFFECTIVENESS = {
 };
 
 // Componente para buscar y cargar detalles de un Pokémon en un slot
-function FighterSelector({ label, onSelect, selectedPokemon }) {
+function FighterSelector({ label, onSelect, selectedPokemon, currentHp, maxHp, status, side }) {
   const { pokemones, isLoading: isListLoading } = usePokemonList();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -81,14 +81,20 @@ function FighterSelector({ label, onSelect, selectedPokemon }) {
       </div>
 
       {selectedPokemon && (
-        <FighterCard name={selectedPokemon} />
+        <FighterCard 
+          name={selectedPokemon}
+          currentHp={currentHp}
+          maxHp={maxHp}
+          status={status}
+          side={side}
+        />
       )}
     </div>
   );
 }
 
 // Carga y muestra los detalles del Pokémon combatiente
-function FighterCard({ name }) {
+function FighterCard({ name, currentHp, maxHp, status, side }) {
   const { pokemon, isLoading, isError } = usePokemonDetails(name);
 
   if (isError) {
@@ -113,17 +119,115 @@ function FighterCard({ name }) {
   const primaryType = pokemon.types[0].type.name;
   const imageUrl = pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default;
 
+  // Determinar color de la barra de vida según porcentaje
+  const pct = maxHp > 0 ? (currentHp / maxHp) * 100 : 0;
+  const healthBarColor = pct > 50 ? '#4caf50' : pct > 20 ? '#ff9800' : '#ef5350';
+
+  // Configurar animaciones de Framer Motion
+  let animateProps = { scale: 1, x: 0, y: 0, opacity: 1, filter: "none" };
+  if (status === 'attacking') {
+    animateProps = {
+      x: side === 'left' ? 55 : -55,
+      scale: 1.06,
+      transition: { type: 'spring', stiffness: 400, damping: 12 }
+    };
+  } else if (status === 'hit') {
+    animateProps = {
+      x: [0, -10, 10, -10, 10, 0],
+      scale: [1, 0.94, 1],
+      transition: { duration: 0.3 }
+    };
+  } else if (status === 'dodging') {
+    animateProps = {
+      y: -30,
+      x: side === 'left' ? -20 : 20,
+      scale: 0.96,
+      transition: { type: 'spring', stiffness: 220, damping: 10 }
+    };
+  } else if (status === 'defeated') {
+    animateProps = {
+      opacity: 1,
+      scale: 0.92,
+      filter: "grayscale(0.9) brightness(0.75)",
+      transition: { duration: 0.5 }
+    };
+  }
+
   return (
     <motion.div 
       className={`fighter-card type-${primaryType}`}
       initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={animateProps}
       exit={{ scale: 0.8, opacity: 0 }}
+      style={{ position: 'relative', overflow: 'hidden' }}
     >
+      {/* Damage Red Flash Overlay */}
+      <AnimatePresence>
+        {status === 'hit' && (
+          <motion.div 
+            className="damage-flash-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.6, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: '#ef5350',
+              borderRadius: '16px',
+              zIndex: 10,
+              pointerEvents: 'none'
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Dodge Blue Flash Overlay */}
+      <AnimatePresence>
+        {status === 'dodging' && (
+          <motion.div 
+            className="dodge-flash-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.5, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: '#80deea',
+              borderRadius: '16px',
+              zIndex: 10,
+              pointerEvents: 'none'
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <img src={imageUrl} alt={name} className="fighter-img" />
       <h4 className="fighter-name">{name}</h4>
       <div className="fighter-type-badge">{primaryType}</div>
-      <div className="fighter-stat-snippet">PS: {pokemon.stats[0].base_stat} | ATK: {pokemon.stats[1].base_stat}</div>
+      
+      {/* Contenedor de Vida */}
+      <div className="fighter-hp-container">
+        <div className="fighter-hp-text">PS: {currentHp} / {maxHp}</div>
+        <div className="fighter-hp-bar-outer">
+          <motion.div 
+            className="fighter-hp-bar-inner"
+            initial={{ width: '100%' }}
+            animate={{ width: `${pct}%` }}
+            transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+            style={{ backgroundColor: healthBarColor }}
+          />
+        </div>
+      </div>
+
+      <div className="fighter-stat-snippet">ATK: {pokemon.stats[1].base_stat} | VEL: {pokemon.stats[5].base_stat}</div>
     </motion.div>
   );
 }
@@ -136,9 +240,44 @@ export default function BattleSimulator() {
   const [winner, setWinner] = useState(null);
   const navigate = useNavigate();
 
+  // Estados de salud y estatus de animación de combatientes
+  const [hpA, setHpA] = useState(0);
+  const [hpB, setHpB] = useState(0);
+  const [maxHpA, setMaxHpA] = useState(1);
+  const [maxHpB, setMaxHpB] = useState(1);
+  const [statusA, setStatusA] = useState('idle'); // 'idle', 'attacking', 'hit', 'defeated'
+  const [statusB, setStatusB] = useState('idle');
+
   // Carga directa de la PokeAPI de los dos combatientes para obtener sus estadísticas completas
   const { pokemon: detailA } = usePokemonDetails(fighterA);
   const { pokemon: detailB } = usePokemonDetails(fighterB);
+
+  // Sincronizar estadísticas de salud al cargar/cambiar combatientes
+  React.useEffect(() => {
+    if (detailA) {
+      const baseHp = detailA.stats[0].base_stat * 3;
+      setHpA(baseHp);
+      setMaxHpA(baseHp);
+      setStatusA('idle');
+    } else {
+      setHpA(0);
+      setMaxHpA(1);
+      setStatusA('idle');
+    }
+  }, [detailA]);
+
+  React.useEffect(() => {
+    if (detailB) {
+      const baseHp = detailB.stats[0].base_stat * 3;
+      setHpB(baseHp);
+      setMaxHpB(baseHp);
+      setStatusB('idle');
+    } else {
+      setHpB(0);
+      setMaxHpB(1);
+      setStatusB('idle');
+    }
+  }, [detailB]);
 
   const calculateTypeAdvantage = (typeA, typeB) => {
     const mult = TYPE_EFFECTIVENESS[typeA]?.[typeB];
@@ -153,8 +292,12 @@ export default function BattleSimulator() {
     setBattleLog([]);
 
     const log = [];
-    let hpA = detailA.stats[0].base_stat * 3; // Ampliar escala para simulación
-    let hpB = detailB.stats[0].base_stat * 3;
+    let currentHpValA = detailA.stats[0].base_stat * 3;
+    let currentHpValB = detailB.stats[0].base_stat * 3;
+    
+    setHpA(currentHpValA);
+    setHpB(currentHpValB);
+
     const typeA = detailA.types[0].type.name;
     const typeB = detailB.types[0].type.name;
 
@@ -164,45 +307,102 @@ export default function BattleSimulator() {
     log.push(`🏁 ¡Comienza el combate! ${detailA.name} (${typeA}) vs ${detailB.name} (${typeB})`);
     if (multA > 1) log.push(`🔥 ¡${detailA.name} tiene ventaja de tipo!`);
     if (multB > 1) log.push(`🔥 ¡${detailB.name} tiene ventaja de tipo!`);
+    setBattleLog([...log]);
 
     let turn = detailA.stats[5].base_stat >= detailB.stats[5].base_stat ? 0 : 1; // Prioridad por velocidad
 
     const runTurn = () => {
-      if (hpA <= 0 || hpB <= 0) {
-        const finalWinner = hpA > 0 ? detailA : detailB;
+      // Si la batalla termina o alguno cae debilitado
+      if (currentHpValA <= 0 || currentHpValB <= 0) {
+        const finalWinner = currentHpValA > 0 ? detailA : detailB;
         setWinner(finalWinner.name);
-        log.push(`🏆 ¡${finalWinner.name} es el ganador!`);
+
+        if (currentHpValA > 0) {
+          setStatusA('idle');
+          setStatusB('defeated');
+        } else {
+          setStatusB('idle');
+          setStatusA('defeated');
+        }
+
+        log.push(`🏆 ¡${finalWinner.name} es el ganador del combate!`);
         setBattleLog([...log]);
         setBattleRunning(false);
 
-        // Disparar confeti con colores del tipo del ganador
-        const primaryColor = finalWinner.types[0].type.name;
         confetti({
-          particleCount: 100,
-          spread: 70,
+          particleCount: 110,
+          spread: 75,
           origin: { y: 0.6 }
         });
         return;
       }
 
-      if (turn === 0) {
-        // Ataca A
-        const dmg = Math.max(1, Math.round(((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA));
-        hpB = Math.max(0, hpB - dmg);
-        log.push(`⚔️ ${detailA.name} ataca causando ${dmg} daño. (PS restante de ${detailB.name}: ${hpB})`);
-      } else {
-        // Ataca B
-        const dmg = Math.max(1, Math.round(((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB));
-        hpA = Math.max(0, hpA - dmg);
-        log.push(`⚔️ ${detailB.name} ataca causando ${dmg} daño. (PS restante de ${detailA.name}: ${hpA})`);
-      }
+      // Restablecer estados del turno anterior
+      setStatusA('idle');
+      setStatusB('idle');
 
-      setBattleLog([...log]);
-      turn = 1 - turn;
-      setTimeout(runTurn, 400); // Demora entre golpes para animación
+      setTimeout(() => {
+        if (turn === 0) {
+          // Ataca A, defiende B
+          const speedA = detailA.stats[5].base_stat;
+          const speedB = detailB.stats[5].base_stat;
+          const speedRatio = speedB / (speedA || 1);
+          const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
+          const isDodged = Math.random() < dodgeProb;
+
+          setStatusA('attacking');
+          
+          if (isDodged) {
+            setStatusB('dodging');
+            log.push(`💨 ¡${detailB.name} esquivó velozmente el ataque de ${detailA.name}!`);
+          } else {
+            setStatusB('hit');
+            const dmg = Math.max(1, Math.round(((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA));
+            currentHpValB = Math.max(0, currentHpValB - dmg);
+            setHpB(currentHpValB);
+            log.push(`⚔️ ${detailA.name} embiste a ${detailB.name} causando ${dmg} daño.`);
+          }
+        } else {
+          // Ataca B, defiende A
+          const speedA = detailA.stats[5].base_stat;
+          const speedB = detailB.stats[5].base_stat;
+          const speedRatio = speedA / (speedB || 1);
+          const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
+          const isDodged = Math.random() < dodgeProb;
+
+          setStatusB('attacking');
+
+          if (isDodged) {
+            setStatusA('dodging');
+            log.push(`💨 ¡${detailA.name} esquivó velozmente el ataque de ${detailB.name}!`);
+          } else {
+            setStatusA('hit');
+            const dmg = Math.max(1, Math.round(((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB));
+            currentHpValA = Math.max(0, currentHpValA - dmg);
+            setHpA(currentHpValA);
+            log.push(`⚔️ ${detailB.name} embiste a ${detailA.name} causando ${dmg} daño.`);
+          }
+        }
+
+        setBattleLog([...log]);
+
+        // Esperar a que la animación física de golpe/esquiva (~350ms) termine para restablecer a idle
+        setTimeout(() => {
+          if (currentHpValA > 0 && currentHpValB > 0) {
+            setStatusA('idle');
+            setStatusB('idle');
+          }
+          
+          turn = 1 - turn;
+          // Próximo turno en 400ms (combate ágil: total ~800ms por acción)
+          setTimeout(runTurn, 400);
+        }, 350);
+
+      }, 50);
     };
 
-    setTimeout(runTurn, 800);
+    // Lanzar el primer turno con un delay de preparación
+    setTimeout(runTurn, 1000);
   };
 
   const handleReset = () => {
@@ -210,6 +410,10 @@ export default function BattleSimulator() {
     setFighterB(null);
     setWinner(null);
     setBattleLog([]);
+    setHpA(0);
+    setHpB(0);
+    setStatusA('idle');
+    setStatusB('idle');
   };
 
   return (
@@ -231,6 +435,10 @@ export default function BattleSimulator() {
               label="Pokémon A" 
               selectedPokemon={fighterA}
               onSelect={setFighterA}
+              currentHp={hpA}
+              maxHp={maxHpA}
+              status={statusA}
+              side="left"
             />
           </div>
 
@@ -252,6 +460,10 @@ export default function BattleSimulator() {
               label="Pokémon B" 
               selectedPokemon={fighterB}
               onSelect={setFighterB}
+              currentHp={hpB}
+              maxHp={maxHpB}
+              status={statusB}
+              side="right"
             />
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePokemonDetails } from "../hooks/usePokemonData";
 import { usePokemonTheme } from "../context/PokemonThemeContext";
@@ -60,19 +60,210 @@ export default function DetailView() {
 
   const primaryType = pokemon?.types?.[0]?.type?.name || "normal";
   const secondaryType = pokemon?.types?.[1]?.type?.name || null;
+  const isLegendary = pokemon?.is_legendary || pokemon?.is_mythical || false;
+
+  const [evoStage, setEvoStage] = useState(2); // 0 = base, 1 = intermedio, 2 = final
+
+  // Determinar la etapa evolutiva exacta (0 = base, 1 = intermedio, 2 = final)
+  useEffect(() => {
+    if (!pokemon || !pokemon.evolutionChainUrl) {
+      setEvoStage(2);
+      return;
+    }
+
+    const checkEvolution = async () => {
+      try {
+        const res = await fetch(pokemon.evolutionChainUrl);
+        const data = await res.json();
+        
+        const evolutions = [];
+        let current = data.chain;
+        while (current) {
+          evolutions.push(current.species.name);
+          current = current.evolves_to?.[0];
+        }
+
+        const stageIdx = evolutions.indexOf(pokemon.name);
+        if (stageIdx === -1) {
+          setEvoStage(2);
+        } else if (evolutions.length <= 1) {
+          setEvoStage(2); // Único -> Se considera final
+        } else if (stageIdx === 0) {
+          setEvoStage(0); // Base (suave)
+        } else if (stageIdx === 1 && evolutions.length === 3) {
+          setEvoStage(1); // Intermedio
+        } else {
+          setEvoStage(2); // Final (espectacular)
+        }
+      } catch (err) {
+        console.error('Error al comprobar evolución:', err);
+        setEvoStage(2);
+      }
+    };
+
+    checkEvolution();
+  }, [pokemon]);
+
+  const effectiveEvoStage = isLegendary ? 2 : evoStage;
+
+  // Generar partículas ambientales según la etapa evolutiva y tipo de pokemon
+  // Base: 6 partículas, Intermedio: 18 partículas, Final: 30 partículas, Legendarios: 35
+  const particleCount = isLegendary ? 35 : effectiveEvoStage === 0 ? 6 : effectiveEvoStage === 1 ? 18 : 30;
+  
+  const particles = useMemo(() => {
+    if (!pokemon) return [];
+    
+    return Array.from({ length: particleCount }).map((_, i) => {
+      let currentType = primaryType;
+      if (secondaryType && i % 2 === 1) {
+        currentType = secondaryType;
+      }
+
+      let isSparkle = false;
+      let isFlower = false;
+      let isSpecial = false;
+      let customContent = "";
+
+      // Regla de Etapa 1: Sin brillos ni partículas complejas (solo círculos sencillos)
+      if (effectiveEvoStage === 0 && !isLegendary) {
+        isSparkle = false;
+        isFlower = false;
+      } else {
+        // Etapas 2 y 3 (y Legendarios)
+        const sparkleProb = (effectiveEvoStage === 2 || isLegendary) ? 0.45 : 0.30;
+        isSparkle = Math.random() < sparkleProb;
+
+        // Distribución de flores rosadas para Planta en fase final (máx 6 en total)
+        if (currentType === 'grass' && (effectiveEvoStage === 2 || isLegendary)) {
+          const grassIndices = Array.from({ length: particleCount })
+            .map((_, idx) => idx)
+            .filter(idx => (secondaryType ? (idx % 2 === 0) : true));
+          const grassPos = grassIndices.indexOf(i);
+          if (grassPos >= 0 && grassPos < 6) {
+            isFlower = true;
+            isSparkle = false;
+          }
+        }
+
+        // Definir emojis o símbolos específicos para Stage 3 y Legendarios
+        if (effectiveEvoStage === 2 || isLegendary) {
+          isSpecial = true;
+          if (currentType === "grass") {
+            customContent = isFlower ? "🌸" : (Math.random() < 0.5 ? "🍃" : "🌿");
+          } else if (currentType === "fire") {
+            customContent = Math.random() < 0.45 ? "🔥" : "✨";
+          } else if (currentType === "water") {
+            customContent = Math.random() < 0.5 ? "💧" : "🫧";
+          } else if (currentType === "electric") {
+            customContent = "⚡";
+          } else if (currentType === "ice") {
+            customContent = Math.random() < 0.6 ? "❄️" : "💎";
+          } else if (currentType === "poison") {
+            customContent = Math.random() < 0.5 ? "☣️" : "🫧";
+          } else if (currentType === "psychic") {
+            customContent = Math.random() < 0.5 ? "🔮" : "⚛️";
+          } else if (currentType === "bug") {
+            customContent = Math.random() < 0.5 ? "🪲" : "🦋";
+          } else if (currentType === "ghost") {
+            customContent = Math.random() < 0.4 ? "👁️" : (Math.random() < 0.5 ? "👻" : "💀");
+          } else if (currentType === "steel") {
+            customContent = "⚙️";
+          } else if (currentType === "dragon") {
+            customContent = Math.random() < 0.5 ? "🐉" : "🔥";
+          } else if (currentType === "fairy") {
+            customContent = Math.random() < 0.5 ? "🌸" : "✨";
+          } else if (currentType === "fighting") {
+            customContent = "👊";
+          } else if (currentType === "ground") {
+            customContent = "🪨";
+          } else if (currentType === "flying") {
+            customContent = "🪶";
+          } else if (currentType === "dark") {
+            customContent = "🌑";
+          } else if (currentType === "rock") {
+            customContent = "🪨";
+          } else {
+            customContent = "✨";
+          }
+        } else if (effectiveEvoStage === 1) {
+          // Etapa 2 (Sutil): Símbolos flotantes ambientales moderados
+          if (Math.random() < 0.4) {
+            isSpecial = true;
+            if (currentType === "grass") customContent = "🍃";
+            else if (currentType === "fire") customContent = "✨";
+            else if (currentType === "water") customContent = "🫧";
+            else if (currentType === "electric") customContent = "⚡";
+            else if (currentType === "ice") customContent = "❄️";
+            else if (currentType === "poison") customContent = "🫧";
+            else if (currentType === "flying") customContent = "🪶";
+            else if (currentType === "steel") customContent = "🔩";
+            else if (currentType === "fairy") customContent = "✨";
+            else if (currentType === "ghost") customContent = "👻";
+            else if (currentType === "psychic") customContent = "✨";
+            else if (currentType === "dark") customContent = "🌙";
+            else if (currentType === "bug") customContent = "✨";
+          }
+        }
+      }
+
+      if (isSparkle && !customContent) {
+        customContent = "✨";
+        isSpecial = true;
+      }
+
+      // Trayectorias y animaciones según tipo de movimiento
+      let animationType = "up";
+      const fallingTypes = ["grass", "ice", "flying", "bug"];
+      const flashTypes = ["electric", "steel", "fighting"];
+
+      if (fallingTypes.includes(currentType)) {
+        animationType = "down";
+      } else if (flashTypes.includes(currentType)) {
+        animationType = "flash";
+      }
+
+      // Doble tipo en Etapa 3/Legendario -> Persiguen en espiral
+      if (secondaryType && (effectiveEvoStage === 2 || isLegendary)) {
+        animationType = (i % 2 === 0) ? "spiral-cw" : "spiral-ccw";
+      }
+
+      return {
+        id: i,
+        left: `${Math.random() * 110 - 5}%`,
+        top: `${Math.random() * 110 - 5}%`,
+        size: Math.random() * 12 + (isLegendary ? 12 : 6),
+        delay: `${Math.random() * 5}s`,
+        duration: `${Math.random() * 4 + (effectiveEvoStage === 0 ? 5 : 3)}s`,
+        dx: `${Math.random() * 100 - 50}px`,
+        dy: `${Math.random() * -140 - 50}px`,
+        isSparkle,
+        isFlower,
+        isSpecial,
+        content: customContent,
+        type: currentType,
+        animationType,
+      };
+    });
+  }, [pokemon?.name, effectiveEvoStage, primaryType, secondaryType, isLegendary, particleCount]);
 
   // Actualizar los colores en el contexto global cuando se carga el Pokémon
   useEffect(() => {
     if (pokemon) {
       const primaryHex = typeColorsHex[primaryType] || "#1a1a2e";
       const secondaryHex = typeColorsHex[secondaryType] || "#16161a";
+      let gradient = `linear-gradient(135deg, ${primaryHex} 0%, ${secondaryHex} 100%)`;
+
+      if (isLegendary) {
+        gradient = `linear-gradient(135deg, #6b21a8 0%, #1e1b4b 40%, #b45309 100%)`;
+      }
+
       updateActiveColors({
         bg: primaryHex,
         bgSecondary: secondaryHex,
-        gradient: `linear-gradient(135deg, ${primaryHex} 0%, ${secondaryHex} 100%)`,
+        gradient: gradient,
       });
     }
-  }, [pokemon, primaryType, secondaryType]);
+  }, [pokemon, primaryType, secondaryType, isLegendary]);
 
   // Limpiar colores únicamente al desmontar el componente
   useEffect(() => {
@@ -109,9 +300,9 @@ export default function DetailView() {
 
   // Configurar las variables de color del degradado mesh animado
   const meshStyles = {
-    "--mesh-color-1": typeColorsHex[primaryType],
-    "--mesh-color-2": secondaryType ? typeColorsHex[secondaryType] : "#2a2a2a",
-    "--mesh-color-3": "#1c1c1e",
+    "--mesh-color-1": isLegendary ? "#b45309" : typeColorsHex[primaryType],
+    "--mesh-color-2": isLegendary ? "#6b21a8" : (secondaryType ? typeColorsHex[secondaryType] : "#2a2a2a"),
+    "--mesh-color-3": isLegendary ? "#1e1b4b" : "#1c1c1e",
   };
 
   return (
@@ -139,57 +330,136 @@ export default function DetailView() {
         <div className='detail-grid'>
           {/* Columna Izquierda: Imagen y Datos Físicos */}
           <div className='left-column'>
-            <motion.div
-              className='pokemon-large-card glass-card'
-              initial={{ scale: 0.9, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 150, damping: 18 }}
+            <div 
+              className={`pokemon-card-ambient-wrapper type-${primaryType} ${secondaryType ? `type-sec-${secondaryType}` : ''} ${isLegendary ? 'legendary' : ''} ${effectiveEvoStage === 0 ? 'basic-evo' : effectiveEvoStage === 1 ? 'inter-evo' : 'final-evo'}`}
+              style={{
+                "--type-color-1": typeColorsHex[primaryType],
+                "--type-color-2": secondaryType ? typeColorsHex[secondaryType] : typeColorsHex[primaryType],
+              }}
             >
-              <span className='pokemon-large-number'>
-                #{String(pokemon.id).padStart(3, "0")}
-              </span>
+              
+              {/* Partículas por detrás de la tarjeta (índices pares) */}
+              <div className="ambient-particles behind" aria-hidden="true">
+                {particles.filter((_, idx) => idx % 2 === 0).map((p) => {
+                  let pClass = "ambient-particle";
+                  if (p.isSparkle) {
+                    pClass += " particle-sparkle";
+                  } else if (p.isFlower) {
+                    pClass += " particle-flower";
+                  } else {
+                    pClass += ` type-particle-${p.type}`;
+                  }
+                  pClass += ` anim-${p.animationType}`;
 
-              {/* Contenedor de Imagen de alta fidelidad */}
-              <motion.div
-                className='artwork-stage'
-                initial={{ scale: 0.7, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.15, duration: 0.45, ease: "easeOut" }}
-              >
-                <motion.img
-                  src={imageUrl}
-                  alt={pokemon.name}
-                  className='large-artwork'
-                  animate={{
-                    y: [0, -8, 0, 8, 0],
-                    rotate: [0, -1.5, 1.5, -1.5, 0],
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 5,
-                    ease: "easeInOut",
-                  }}
-                />
-              </motion.div>
-
-              <div className='pokemon-identity'>
-                <h1 className='pokemon-large-name'>{pokemon.name}</h1>
-                <p className='pokemon-large-genera'>{pokemon.genera}</p>
-                <div className='badge-row'>
-                  <span className={`type-badge-pill type-${primaryType}`}>
-                    {typeIcons[primaryType] || "⭐"} {primaryType}
-                  </span>
-                  {secondaryType && (
-                    <span className={`type-badge-pill type-${secondaryType}`}>
-                      {typeIcons[secondaryType] || "⭐"} {secondaryType}
+                  return (
+                    <span
+                      key={p.id}
+                      className={pClass}
+                      style={{
+                        left: p.left,
+                        top: p.top,
+                        fontSize: p.isSpecial ? `${p.size}px` : undefined,
+                        width: p.isSpecial ? undefined : `${p.size}px`,
+                        height: p.isSpecial ? undefined : `${p.size}px`,
+                        animationDelay: p.delay,
+                        animationDuration: p.duration,
+                        '--dx': p.dx,
+                        '--dy': p.dy,
+                      }}
+                    >
+                      {p.isSpecial ? p.content : ""}
                     </span>
-                  )}
-                </div>
+                  );
+                })}
               </div>
 
-              {/* Cry Player oficial */}
-              <CryPlayer cries={pokemon.cries} pokemonName={pokemon.name} />
-            </motion.div>
+              {/* Partículas por delante de la tarjeta (índices impares) */}
+              <div className="ambient-particles in-front" aria-hidden="true">
+                {particles.filter((_, idx) => idx % 2 !== 0).map((p) => {
+                  let pClass = "ambient-particle";
+                  if (p.isSparkle) {
+                    pClass += " particle-sparkle";
+                  } else if (p.isFlower) {
+                    pClass += " particle-flower";
+                  } else {
+                    pClass += ` type-particle-${p.type}`;
+                  }
+                  pClass += ` anim-${p.animationType}`;
+
+                  return (
+                    <span
+                      key={p.id}
+                      className={pClass}
+                      style={{
+                        left: p.left,
+                        top: p.top,
+                        fontSize: p.isSpecial ? `${p.size}px` : undefined,
+                        width: p.isSpecial ? undefined : `${p.size}px`,
+                        height: p.isSpecial ? undefined : `${p.size}px`,
+                        animationDelay: p.delay,
+                        animationDuration: p.duration,
+                        '--dx': p.dx,
+                        '--dy': p.dy,
+                      }}
+                    >
+                      {p.isSpecial ? p.content : ""}
+                    </span>
+                  );
+                })}
+              </div>
+
+              <motion.div
+                className='pokemon-large-card glass-card'
+                initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 150, damping: 18 }}
+              >
+                <span className='pokemon-large-number'>
+                  #{String(pokemon.id).padStart(3, "0")}
+                </span>
+
+                {/* Contenedor de Imagen de alta fidelidad */}
+                <motion.div
+                  className='artwork-stage'
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.15, duration: 0.45, ease: "easeOut" }}
+                >
+                  <motion.img
+                    src={imageUrl}
+                    alt={pokemon.name}
+                    className='large-artwork'
+                    animate={{
+                      y: [0, -8, 0, 8, 0],
+                      rotate: [0, -1.5, 1.5, -1.5, 0],
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 5,
+                      ease: "easeInOut",
+                    }}
+                  />
+                </motion.div>
+
+                <div className='pokemon-identity'>
+                  <h1 className='pokemon-large-name'>{pokemon.name}</h1>
+                  <p className='pokemon-large-genera'>{pokemon.genera}</p>
+                  <div className='badge-row'>
+                    <span className={`type-badge-pill type-${primaryType}`}>
+                      {typeIcons[primaryType] || "⭐"} {primaryType}
+                    </span>
+                    {secondaryType && (
+                      <span className={`type-badge-pill type-${secondaryType}`}>
+                        {typeIcons[secondaryType] || "⭐"} {secondaryType}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Cry Player oficial */}
+                <CryPlayer cries={pokemon.cries} pokemonName={pokemon.name} />
+              </motion.div>
+            </div>
           </div>
 
           {/* Columna Derecha: Estadísticas, Habilidades y Evoluciones */}
