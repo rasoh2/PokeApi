@@ -6,6 +6,9 @@ import Home from "./views/Home";
 import Dashboard from "./views/Dashboard";
 import DetailView from "./views/DetailView";
 import BattleSimulator from "./components/BattleSimulator";
+import TeamBuilderView from "./views/TeamBuilderView";
+import AnalyticsView from "./views/AnalyticsView";
+import QuizView from "./views/QuizView";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import NotFound from "./components/NotFound";
@@ -24,6 +27,9 @@ function App() {
               <Route path='/gallery' element={<Dashboard />} />
               <Route path='/gallery/:pokemon' element={<DetailView />} />
               <Route path='/battle' element={<BattleSimulator />} />
+              <Route path='/team-builder' element={<TeamBuilderView />} />
+              <Route path='/quiz' element={<QuizView />} />
+              <Route path='/analytics' element={<AnalyticsView />} />
               <Route path='*' element={<NotFound />} />
             </Routes>
             <Footer />

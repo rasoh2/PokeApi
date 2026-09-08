@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePokemonList, usePokemonDetails } from '../hooks/usePokemonData';
 import { Button, Card, Loader, TextInput } from '@gravity-ui/uikit';
 import confetti from 'canvas-confetti';
+import { apiService } from '../services/apiService';
 import './BattleSimulator.css';
 import './PokemonCard.css';
 
@@ -476,6 +477,15 @@ export default function BattleSimulator() {
         log.push(`🏆 ¡${finalWinner.name} es el ganador del combate!`);
         setBattleLog([...log]);
         setBattleRunning(false);
+
+        // Persist battle result and turns to MongoDB
+        apiService.saveBattleLog({
+          playerPokemon: { id: detailA.id, name: detailA.name, type: detailA.types[0]?.type?.name || 'normal' },
+          rivalPokemon: { id: detailB.id, name: detailB.name, type: detailB.types[0]?.type?.name || 'normal' },
+          winner: currentHpValA > 0 ? 'player' : 'rival',
+          turns: log.length,
+          log: log
+        });
 
         playSoundType('victory'); // Sonido de victoria retro
 

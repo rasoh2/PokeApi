@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePokemonList, usePokemonDetails } from '../hooks/usePokemonData';
 import { usePokemonTheme } from '../context/PokemonThemeContext';
 import SearchPredictive from '../components/SearchPredictive';
 import PokemonCard from '../components/PokemonCard';
 import { Card, Loader, Button } from '@gravity-ui/uikit';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Dashboard.css';
 
 // Componente para cargar datos individuales de cada Pokémon en la grilla de manera diferida y segura
@@ -13,7 +13,6 @@ function PokemonCardLoader({ name, onClick }) {
   const { pokemon, isLoading, isError } = usePokemonDetails(name);
 
   if (isError) {
-    // Fallback: Si falla la carga de detalles, renderizamos la tarjeta básica sin tipo
     const fallbackPokemon = { name };
     return <PokemonCard pokemon={fallbackPokemon} onClick={onClick} />;
   }
@@ -40,15 +39,36 @@ export default function Dashboard() {
   const { pokemones, isLoading } = usePokemonList();
   const { theme } = usePokemonTheme();
   const [searchTerm, setSearchTerm] = useState('');
-  const [itemsToShow, setItemsToShow] = useState(50); // Muestra 50 inicialmente
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(24);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
+  // Reset to page 1 when searching
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, pageSize]);
 
   const filteredPokemones = pokemones.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const totalPages = Math.max(1, Math.ceil(filteredPokemones.length / pageSize));
+  const startIndex = (currentPage - 1) * pageSize;
+  const currentPokemones = filteredPokemones.slice(startIndex, startIndex + pageSize);
+
   const handleSelectPokemon = (name) => {
     navigate(`/gallery/${name}`);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      document.querySelector('.grid-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -66,7 +86,7 @@ export default function Dashboard() {
               <span>Ultimate</span> Pokédex
             </h1>
             <p className="subtitle">
-              Explora el universo Pokémon con físicas interactivas y estadísticas avanzadas
+              Explora el universo Pokémon con físicas interactivas, filtrado predictivo y estadísticas avanzadas
             </p>
           </motion.div>
 
@@ -107,12 +127,30 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="grid-section">
-            <h2 className="section-title">
-              📚 Listado de Pokémon (Mostrando {Math.min(itemsToShow, filteredPokemones.length)} de {filteredPokemones.length})
-            </h2>
+            <div className="pagination-top-bar">
+              <h2 className="section-title">
+                📚 Catálogo Pokémon (Página {currentPage} de {totalPages})
+              </h2>
 
-            {/* Grilla paginada localmente */}
+              {/* Selector de Por Página */}
+              <div className="page-size-selector">
+                <label>Mostrar:</label>
+                <select
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  className="page-size-select"
+                >
+                  <option value={24}>24 por pág</option>
+                  <option value={48}>48 por pág</option>
+                  <option value={96}>96 por pág</option>
+                  <option value={120}>120 por pág</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Grilla de la página actual */}
             <motion.div 
+              key={`${currentPage}-${pageSize}`}
               className="pokemon-grid"
               initial="hidden"
               animate="show"
@@ -121,12 +159,12 @@ export default function Dashboard() {
                 show: {
                   opacity: 1,
                   transition: {
-                    staggerChildren: 0.003,
+                    staggerChildren: 0.02,
                   },
                 },
               }}
             >
-              {filteredPokemones.slice(0, itemsToShow).map((p) => (
+              {currentPokemones.map((p) => (
                 <motion.div
                   key={p.name}
                   variants={{
@@ -144,22 +182,44 @@ export default function Dashboard() {
               ))}
             </motion.div>
 
-            {/* Botón para cargar más Pokémon */}
-            {itemsToShow < filteredPokemones.length && (
-              <div className="load-more-container text-center my-5">
-                <Button 
-                  size="xl" 
-                  view="action" 
-                  className="load-more-btn"
-                  onClick={() => setItemsToShow((prev) => prev + 100)}
-                >
-                  📥 Cargar próximos 100 Pokémon
-                </Button>
-                <p className="load-more-info mt-2 text-white-50">
-                  Mostrando {Math.min(itemsToShow, filteredPokemones.length)} de {filteredPokemones.length} criaturas
-                </p>
-              </div>
-            )}
+            {/* Paginador Inferior Completo */}
+            <div className="pagination-controls-container">
+              <button
+                className="page-btn"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(1)}
+                title="Primera página"
+              >
+                ⏮️ Primera
+              </button>
+              <button
+                className="page-btn"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                ◀ Anterior
+              </button>
+
+              <span className="page-indicator">
+                Página <strong>{currentPage}</strong> de <strong>{totalPages}</strong> ({filteredPokemones.length} Pokémon)
+              </span>
+
+              <button
+                className="page-btn"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                Siguiente ▶
+              </button>
+              <button
+                className="page-btn"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(totalPages)}
+                title="Última página"
+              >
+                Última ⏭️
+              </button>
+            </div>
           </div>
         )}
       </div>

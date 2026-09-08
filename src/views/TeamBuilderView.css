@@ -1,0 +1,243 @@
+.team-builder-view {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  color: #fff;
+}
+
+.builder-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.builder-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.builder-subtitle {
+  color: #a0aec0;
+  font-size: 1.05rem;
+  max-width: 700px;
+  margin: 0 auto 20px;
+}
+
+.builder-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e0;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: #3182ce;
+  border-color: #3182ce;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+}
+
+.team-form-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.team-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.team-slot-card {
+  height: 200px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.team-slot-card:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.slot-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #a0aec0;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.plus-icon {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+.slot-filled {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.remove-btn:hover {
+  background: #e53e3e;
+}
+
+.pokemon-sprite {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.pokemon-name {
+  text-transform: capitalize;
+  font-weight: 700;
+  margin-top: 6px;
+  font-size: 1rem;
+}
+
+.pokemon-types {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.type-tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.builder-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.save-message {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.modal-search-content {
+  background: #1a202c;
+  padding: 28px 24px 36px 24px;
+  border-radius: 20px;
+  min-width: 460px;
+  min-height: 380px;
+  color: #fff;
+  overflow: visible !important;
+  position: relative;
+}
+
+.community-teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.community-team-card {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: 14px !important;
+}
+
+.team-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.team-card-notes {
+  font-size: 0.85rem;
+  color: #a0aec0;
+  margin-bottom: 12px;
+}
+
+.community-sprites {
+  display: flex;
+  gap: 6px;
+}
+
+.micro-sprite {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}

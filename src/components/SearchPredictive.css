@@ -10,10 +10,27 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .gravity-search-input {
   width: 100%;
+  border-radius: 30px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Remove Gravity UI internal duplicate borders and boxes */
+.gravity-search-input,
+.gravity-search-input *,
+.gravity-search-input .g-text-input__control,
+.gravity-search-input .g-text-input__content_type_input {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .gravity-search-input input {
@@ -21,40 +38,38 @@
   font-size: 1.1rem !important;
   font-weight: 500 !important;
   padding-left: 20px !important;
-  border-radius: 30px !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px);
+  padding-right: 45px !important;
+  background: transparent !important;
   color: #fff !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease !important;
 }
 
-.gravity-search-input input:focus {
+.gravity-search-input:focus-within {
   border-color: #ff5252 !important;
-  box-shadow: 0 0 15px rgba(255, 82, 82, 0.3), inset 0 2px 4px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 0 15px rgba(255, 82, 82, 0.35) !important;
   background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .pokeball-search-icon {
   position: absolute;
-  right: 15px;
-  font-size: 1.3rem;
+  right: 18px;
+  font-size: 1.2rem;
   pointer-events: none;
+  z-index: 2;
   animation: float-slow 4s ease-in-out infinite;
 }
 
 .suggestions-dropdown {
   position: absolute;
-  top: 105%;
+  top: 108%;
   left: 0;
   right: 0;
   border-radius: 16px;
-  border: 1px solid var(--glass-border);
-  background: rgba(20, 20, 25, 0.95);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(20, 20, 25, 0.96);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  z-index: 1000;
 }
 
 .dropdown-header {
@@ -72,16 +87,18 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .suggestion-item {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .suggestion-item:last-child {
@@ -89,36 +106,30 @@
 }
 
 .suggestion-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   transform: translateX(4px);
 }
 
 .silhouette-container {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
   overflow: hidden;
 }
 
 .suggestion-pokemon-img {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
-  transition: filter 0.3s ease, transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
-/* Silueta ("¿Quién es ese Pokémon?") */
-.silhouette {
-  filter: brightness(0) invert(1) opacity(0.3); /* Silueta blanca translúcida en modo oscuro */
-}
-
-.suggestion-item:hover .silhouette {
-  filter: none; /* Revelar color */
-  transform: scale(1.15) rotate(5deg);
+.suggestion-item:hover .suggestion-pokemon-img {
+  transform: scale(1.15);
 }
 
 .suggestion-info {
@@ -129,15 +140,13 @@
 .suggestion-name {
   color: #fff;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   text-transform: capitalize;
-  font-family: var(--font-family);
 }
 
 .suggestion-id {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.4);
-  font-family: var(--font-family);
   margin-top: 2px;
 }
 

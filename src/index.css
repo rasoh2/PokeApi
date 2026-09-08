@@ -148,3 +148,14 @@ body {
   transform: translateY(-8px) scale(1.02);
   box-shadow: var(--shadow-xl);
 }
+
+/* Gravity UI Input Cleanup - Eliminate double border overlays */
+.g-text-input__box,
+.g-text-input__control,
+.g-text-input__content {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+

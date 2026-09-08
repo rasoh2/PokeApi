@@ -56,13 +56,35 @@ const NavBar = () => {
             </li>
             <li className='nav-item mx-2'>
               <NavLink
-                to='/battle'
+                to='/team-builder'
                 className={({ isActive }) =>
                   isActive ? "nav-link px-3 py-2 active" : "nav-link px-3 py-2"
                 }
               >
-                <i className='fas fa-gamepad me-2'></i>
-                Arena
+                <i className='fas fa-shield-alt me-2'></i>
+                Team Builder
+              </NavLink>
+            </li>
+            <li className='nav-item mx-2'>
+              <NavLink
+                to='/quiz'
+                className={({ isActive }) =>
+                  isActive ? "nav-link px-3 py-2 active" : "nav-link px-3 py-2"
+                }
+              >
+                <i className='fas fa-question-circle me-2'></i>
+                Poké-Quiz
+              </NavLink>
+            </li>
+            <li className='nav-item mx-2'>
+              <NavLink
+                to='/analytics'
+                className={({ isActive }) =>
+                  isActive ? "nav-link px-3 py-2 active" : "nav-link px-3 py-2"
+                }
+              >
+                <i className='fas fa-chart-bar me-2'></i>
+                Analytics MongoDB
               </NavLink>
             </li>
             <li className='nav-item ms-3'>
