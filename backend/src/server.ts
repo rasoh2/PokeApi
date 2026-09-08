@@ -11,7 +11,7 @@ import quizRoutes from './routes/quizRoutes';
 dotenv.config();
 
 const app = express();
-let PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Middlewares
 app.use(cors());

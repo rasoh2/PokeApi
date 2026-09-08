@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const connString = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/pokeapi_db';
+    const connString = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/pokeapi_db';
     const conn = await mongoose.connect(connString, { serverSelectionTimeoutMS: 2000 });
     console.log(`🍃 MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
