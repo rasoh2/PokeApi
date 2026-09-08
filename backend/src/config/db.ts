@@ -11,6 +11,7 @@ export const connectDB = async (): Promise<void> => {
 
     try {
       // Dynamic import of MongoMemoryServer
+      // @ts-ignore
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       const mongod = await MongoMemoryServer.create();
       const uri = mongod.getUri();
