@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePokemonList, usePokemonDetails } from '../hooks/usePokemonData';
-import { Button, Card, Loader, TextInput } from '@gravity-ui/uikit';
+import { Button, Loader, TextInput } from '@gravity-ui/uikit';
 import confetti from 'canvas-confetti';
 import { apiService } from '../services/apiService';
 import './BattleSimulator.css';
@@ -30,31 +30,72 @@ const TYPE_EFFECTIVENESS = {
   normal: { rock: 0.5, steel: 0.5, ghost: 0 }
 };
 
-// Retro sound effects synthesis via Web Audio API
+// Retro sound effects synthesis via Web Audio API with elemental variations
 const playSoundType = (type) => {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     const ctx = new AudioContext();
+    const now = ctx.currentTime;
     
-    if (type === 'hit') {
-      // Normal tackle/impact sound
+    if (type === 'electric') {
+      // Zap & crackle thunder sound
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(700, now);
+      osc.frequency.linearRampToValueAtTime(180, now + 0.18);
+      
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
       osc.connect(gain);
       gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } else if (type === 'fire') {
+      // Roaring flame blast sound
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(50, now + 0.25);
       
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } else if (type === 'poison') {
+      // Toxic bubbling tone
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.2);
+      
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } else if (type === 'ice') {
+      // Crisp ice shard chime sound
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(160, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.12);
+      osc.frequency.setValueAtTime(950, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.2);
       
-      gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.12);
-      
-      osc.start();
-      osc.stop(ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
     } else if (type === 'special') {
-      // Powerful special blast sound
+      // Epic dual oscillator burst
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -64,20 +105,36 @@ const playSoundType = (type) => {
       gain.connect(ctx.destination);
       
       osc1.type = 'sawtooth';
-      osc1.frequency.setValueAtTime(250, ctx.currentTime);
-      osc1.frequency.exponentialRampToValueAtTime(650, ctx.currentTime + 0.25);
+      osc1.frequency.setValueAtTime(280, now);
+      osc1.frequency.exponentialRampToValueAtTime(750, now + 0.3);
       
       osc2.type = 'square';
-      osc2.frequency.setValueAtTime(120, ctx.currentTime);
-      osc2.frequency.linearRampToValueAtTime(40, ctx.currentTime + 0.25);
+      osc2.frequency.setValueAtTime(140, now);
+      osc2.frequency.linearRampToValueAtTime(45, now + 0.3);
       
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
       
-      osc1.start();
-      osc2.start();
-      osc1.stop(ctx.currentTime + 0.25);
-      osc2.stop(ctx.currentTime + 0.25);
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.3);
+      osc2.stop(now + 0.3);
+    } else if (type === 'hit') {
+      // Normal tackle/impact thud
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.14);
+      
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.14);
+      
+      osc.start(now);
+      osc.stop(now + 0.14);
     } else if (type === 'dodge') {
       // Fast pitch slide up
       const osc = ctx.createOscillator();
@@ -86,14 +143,14 @@ const playSoundType = (type) => {
       gain.connect(ctx.destination);
       
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(280, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(850, ctx.currentTime + 0.18);
+      osc.frequency.setValueAtTime(280, now);
+      osc.frequency.exponentialRampToValueAtTime(850, now + 0.18);
       
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
       
-      osc.start();
-      osc.stop(ctx.currentTime + 0.18);
+      osc.start(now);
+      osc.stop(now + 0.18);
     } else if (type === 'miss') {
       // Low buzz sound
       const osc = ctx.createOscillator();
@@ -102,14 +159,14 @@ const playSoundType = (type) => {
       gain.connect(ctx.destination);
       
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(90, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(50, ctx.currentTime + 0.15);
+      osc.frequency.setValueAtTime(90, now);
+      osc.frequency.linearRampToValueAtTime(50, now + 0.15);
       
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
       
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
+      osc.start(now);
+      osc.stop(now + 0.15);
     } else if (type === 'victory') {
       // Short victory fan-fare
       const playNote = (freq, time, duration) => {
@@ -128,7 +185,6 @@ const playSoundType = (type) => {
         osc.stop(time + duration);
       };
       
-      const now = ctx.currentTime;
       playNote(523.25, now, 0.12); // C5
       playNote(659.25, now + 0.12, 0.12); // E5
       playNote(783.99, now + 0.24, 0.12); // G5
@@ -152,15 +208,94 @@ const getRandomMove = (pokemonDetail, isSpecial) => {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+// Map primary pokemon type to elemental FX overlay
+const getElementEffectType = (pokemonType, isSpecial) => {
+  if (isSpecial) return 'special';
+  const type = (pokemonType || '').toLowerCase();
+  if (type === 'electric') return 'electric';
+  if (type === 'fire') return 'fire';
+  if (type === 'grass' || type === 'poison' || type === 'bug') return 'poison';
+  if (type === 'water' || type === 'ice') return 'ice';
+  return 'physical';
+};
+
+// Visual Elemental Effect Components
+function ElectricFX() {
+  return (
+    <div className="fx-overlay fx-electric-overlay">
+      <svg className="lightning-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <polygon points="50,0 25,48 48,48 30,100 85,42 55,42" fill="#ffee58" filter="drop-shadow(0 0 10px #00e5ff)" />
+        <polygon points="15,10 65,35 42,48 80,92 48,55 68,42" fill="#00e5ff" opacity="0.85" />
+      </svg>
+      <div className="zap-spark s1" />
+      <div className="zap-spark s2" />
+      <div className="zap-spark s3" />
+    </div>
+  );
+}
+
+function FireFX() {
+  return (
+    <div className="fx-overlay fx-fire-overlay">
+      <div className="fire-flare-burst" />
+      <div className="ember-particle e1" />
+      <div className="ember-particle e2" />
+      <div className="ember-particle e3" />
+      <div className="ember-particle e4" />
+    </div>
+  );
+}
+
+function PoisonFX() {
+  return (
+    <div className="fx-overlay fx-poison-overlay">
+      <div className="poison-mist-cloud" />
+      <div className="poison-bubble-particle b1" />
+      <div className="poison-bubble-particle b2" />
+      <div className="poison-bubble-particle b3" />
+    </div>
+  );
+}
+
+function IceFX() {
+  return (
+    <div className="fx-overlay fx-ice-overlay">
+      <div className="ice-shard-particle i1" />
+      <div className="ice-shard-particle i2" />
+      <div className="ice-shard-particle i3" />
+      <div className="ice-frost-flash" />
+    </div>
+  );
+}
+
+function SpecialFX() {
+  return (
+    <div className="fx-overlay fx-special-overlay">
+      <div className="slash-beam beam-1" />
+      <div className="slash-beam beam-2" />
+      <div className="special-impact-ring" />
+    </div>
+  );
+}
+
+function PhysicalFX() {
+  return (
+    <div className="fx-overlay fx-physical-overlay">
+      <div className="impact-shockwave" />
+      <div className="punch-spark p1" />
+      <div className="punch-spark p2" />
+    </div>
+  );
+}
+
 // Componente para buscar y cargar detalles de un Pokémon en un slot
-function FighterSelector({ label, onSelect, selectedPokemon, currentHp, maxHp, status, side }) {
+function FighterSelector({ label, onSelect, selectedPokemon, currentHp, maxHp, status, side, activeEffect, floatingText }) {
   const { pokemones, isLoading: isListLoading } = usePokemonList();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Filtrar sugerencias reactivamente cuando carguen los pokemones o cambie la query
-  React.useEffect(() => {
+  useEffect(() => {
     if (query.trim().length > 1 && pokemones.length > 0) {
       const filtered = pokemones
         .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
@@ -210,6 +345,8 @@ function FighterSelector({ label, onSelect, selectedPokemon, currentHp, maxHp, s
           maxHp={maxHp}
           status={status}
           side={side}
+          activeEffect={activeEffect}
+          floatingText={floatingText}
         />
       )}
     </div>
@@ -217,7 +354,7 @@ function FighterSelector({ label, onSelect, selectedPokemon, currentHp, maxHp, s
 }
 
 // Carga y muestra los detalles del Pokémon combatiente
-function FighterCard({ name, currentHp, maxHp, status, side }) {
+function FighterCard({ name, currentHp, maxHp, status, side, activeEffect, floatingText }) {
   const { pokemon, isLoading, isError } = usePokemonDetails(name);
 
   if (isError) {
@@ -250,20 +387,20 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
   let animateProps = { scale: 1, x: 0, y: 0, opacity: 1, filter: "none" };
   if (status === 'attacking') {
     animateProps = {
-      x: side === 'left' ? 65 : -65,
-      scale: 1.08,
+      x: side === 'left' ? 75 : -75,
+      scale: 1.1,
       transition: { type: 'spring', stiffness: 350, damping: 10 }
     };
   } else if (status === 'hit') {
     animateProps = {
-      x: [0, -12, 12, -12, 12, 0],
-      scale: [1, 0.92, 1],
+      x: [0, -14, 14, -14, 14, 0],
+      scale: [1, 0.9, 1],
       transition: { duration: 0.4, ease: "easeInOut" }
     };
   } else if (status === 'dodging') {
     animateProps = {
       y: [-45, 0],
-      x: side === 'left' ? [-30, 0] : [30, 0],
+      x: side === 'left' ? [-35, 0] : [35, 0],
       scale: [0.94, 1],
       transition: { duration: 0.5, ease: "easeOut" }
     };
@@ -284,13 +421,49 @@ function FighterCard({ name, currentHp, maxHp, status, side }) {
       exit={{ scale: 0.8, opacity: 0 }}
       style={{ position: 'relative', overflow: 'hidden' }}
     >
+      {/* Floating Damage / Miss Popups */}
+      <AnimatePresence>
+        {floatingText && (
+          <motion.div 
+            key={floatingText.id}
+            className={`floating-text-badge float-${floatingText.type}`}
+            initial={{ opacity: 0, y: 15, scale: 0.5 }}
+            animate={{ opacity: [0, 1, 1, 0], y: -50, scale: [0.6, 1.25, 1, 0.9] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+          >
+            {floatingText.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Dynamic Elemental FX Overlays */}
+      <AnimatePresence>
+        {activeEffect && (
+          <motion.div 
+            className={`fx-wrapper`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeEffect === 'electric' && <ElectricFX />}
+            {activeEffect === 'fire' && <FireFX />}
+            {activeEffect === 'poison' && <PoisonFX />}
+            {activeEffect === 'ice' && <IceFX />}
+            {activeEffect === 'special' && <SpecialFX />}
+            {activeEffect === 'physical' && <PhysicalFX />}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Damage Red Flash Overlay */}
       <AnimatePresence>
         {status === 'hit' && (
           <motion.div 
             className="damage-flash-overlay"
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.8, 0] }}
+            animate={{ opacity: [0, 0.85, 0] }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
             style={{
@@ -394,15 +567,39 @@ export default function BattleSimulator() {
   const [hpB, setHpB] = useState(0);
   const [maxHpA, setMaxHpA] = useState(1);
   const [maxHpB, setMaxHpB] = useState(1);
-  const [statusA, setStatusA] = useState('idle'); // 'idle', 'attacking', 'hit', 'defeated'
+  const [statusA, setStatusA] = useState('idle');
   const [statusB, setStatusB] = useState('idle');
+
+  // Efectos elementales activos por luchador
+  const [effectA, setEffectA] = useState(null);
+  const [effectB, setEffectB] = useState(null);
+
+  // Textos flotantes de daño o estado por luchador
+  const [floatA, setFloatA] = useState(null);
+  const [floatB, setFloatB] = useState(null);
+
+  // Estado de sacudida de pantalla / arena
+  const [screenShake, setScreenShake] = useState(false);
+
+  // Referencia para scroll automático del log
+  const logContainerRef = useRef(null);
 
   // Carga directa de la PokeAPI de los dos combatientes para obtener sus estadísticas completas
   const { pokemon: detailA } = usePokemonDetails(fighterA);
   const { pokemon: detailB } = usePokemonDetails(fighterB);
 
+  // Scroll automático del registro de turnos cuando se agreguen nuevas acciones
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTo({
+        top: logContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [battleLog]);
+
   // Sincronizar estadísticas de salud al cargar/cambiar combatientes
-  React.useEffect(() => {
+  useEffect(() => {
     if (detailA) {
       const baseHp = detailA.stats[0].base_stat * 3;
       setHpA(baseHp);
@@ -415,7 +612,7 @@ export default function BattleSimulator() {
     }
   }, [detailA]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (detailB) {
       const baseHp = detailB.stats[0].base_stat * 3;
       setHpB(baseHp);
@@ -433,12 +630,21 @@ export default function BattleSimulator() {
     return mult !== undefined ? mult : 1;
   };
 
+  const triggerShake = () => {
+    setScreenShake(true);
+    setTimeout(() => setScreenShake(false), 450);
+  };
+
   const handleSimulate = async () => {
     if (!detailA || !detailB) return;
 
     setBattleRunning(true);
     setWinner(null);
     setBattleLog([]);
+    setEffectA(null);
+    setEffectB(null);
+    setFloatA(null);
+    setFloatB(null);
 
     const log = [];
     let currentHpValA = detailA.stats[0].base_stat * 3;
@@ -478,7 +684,7 @@ export default function BattleSimulator() {
         setBattleLog([...log]);
         setBattleRunning(false);
 
-        // Persist battle result and turns to MongoDB
+        // Guardar resultado en MongoDB
         apiService.saveBattleLog({
           playerPokemon: { id: detailA.id, name: detailA.name, type: detailA.types[0]?.type?.name || 'normal' },
           rivalPokemon: { id: detailB.id, name: detailB.name, type: detailB.types[0]?.type?.name || 'normal' },
@@ -487,7 +693,7 @@ export default function BattleSimulator() {
           log: log
         });
 
-        playSoundType('victory'); // Sonido de victoria retro
+        playSoundType('victory');
 
         confetti({
           particleCount: 110,
@@ -497,11 +703,13 @@ export default function BattleSimulator() {
         return;
       }
 
-      // Restablecer estados del turno anterior a idle
+      // Restablecer estados del turno anterior
       setStatusA('idle');
       setStatusB('idle');
+      setEffectA(null);
+      setEffectB(null);
 
-      // Fase 1: El atacante inicia la embestida (Lunge Phase)
+      // Fase 1: El atacante inicia la embestida
       setTimeout(() => {
         if (turn === 0) {
           setStatusA('attacking');
@@ -511,7 +719,7 @@ export default function BattleSimulator() {
 
         // Fase 2: El ataque impacta o es esquivado/fallado tras 380ms
         setTimeout(() => {
-          const isSpecial = Math.random() < 0.25; // 25% de probabilidad de ataque especial
+          const isSpecial = Math.random() < 0.25; // 25% probabilidad de golpe especial
 
           if (turn === 0) {
             // Ataca A, defiende B
@@ -520,33 +728,40 @@ export default function BattleSimulator() {
             const speedRatio = speedB / (speedA || 1);
             const dodgeProb = Math.min(0.35, Math.max(0.08, speedRatio * 0.18));
             const isDodged = Math.random() < dodgeProb;
-            const isMissed = !isDodged && Math.random() < 0.12; // 12% probabilidad base de fallar
+            const isMissed = !isDodged && Math.random() < 0.12;
 
-            setStatusA('idle'); // El atacante regresa a su posicion
+            setStatusA('idle');
 
             if (isDodged) {
               setStatusB('dodging');
+              setFloatB({ id: Date.now(), text: '💨 ¡ESQUIVADO!', type: 'dodge' });
               playSoundType('dodge');
               log.push(`💨 ¡${detailB.name} esquivó velozmente el ataque de ${detailA.name}!`);
             } else if (isMissed) {
+              setFloatB({ id: Date.now(), text: '❌ ¡FALLÓ!', type: 'miss' });
               playSoundType('miss');
               log.push(`❌ ¡El ataque de ${detailA.name} falló y no alcanzó a ${detailB.name}!`);
             } else {
               setStatusB('hit');
               const moveName = getRandomMove(detailA, isSpecial);
-              
+              const fxType = getElementEffectType(typeA, isSpecial);
+              setEffectB(fxType);
+
               if (isSpecial) {
                 playSoundType('special');
-                // Ataque especial inflige el doble de daño para combates más rápidos y emocionantes
+                triggerShake();
                 const dmg = Math.max(2, Math.round((((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA) * 2.0));
                 currentHpValB = Math.max(0, currentHpValB - dmg);
                 setHpB(currentHpValB);
+                setFloatB({ id: Date.now(), text: `💥 -${dmg} PS`, type: 'special' });
                 log.push(`💥 ¡ATAQUE ESPECIAL! ¡${detailA.name} desata ${moveName} infligiendo ${dmg} daño devastador!`);
               } else {
-                playSoundType('hit');
+                playSoundType(fxType);
+                if (multA > 1) triggerShake();
                 const dmg = Math.max(1, Math.round(((detailA.stats[1].base_stat / 5) + Math.random() * 5) * multA));
                 currentHpValB = Math.max(0, currentHpValB - dmg);
                 setHpB(currentHpValB);
+                setFloatB({ id: Date.now(), text: `⚔️ -${dmg} PS`, type: 'damage' });
                 log.push(`⚔️ ${detailA.name} usa ${moveName} y causa ${dmg} daño.`);
               }
             }
@@ -559,31 +774,38 @@ export default function BattleSimulator() {
             const isDodged = Math.random() < dodgeProb;
             const isMissed = !isDodged && Math.random() < 0.12;
 
-            setStatusB('idle'); // El atacante regresa a su posicion
+            setStatusB('idle');
 
             if (isDodged) {
               setStatusA('dodging');
+              setFloatA({ id: Date.now(), text: '💨 ¡ESQUIVADO!', type: 'dodge' });
               playSoundType('dodge');
               log.push(`💨 ¡${detailA.name} esquivó velozmente el ataque de ${detailB.name}!`);
             } else if (isMissed) {
+              setFloatA({ id: Date.now(), text: '❌ ¡FALLÓ!', type: 'miss' });
               playSoundType('miss');
               log.push(`❌ ¡El ataque de ${detailB.name} falló y no alcanzó a ${detailA.name}!`);
             } else {
               setStatusA('hit');
               const moveName = getRandomMove(detailB, isSpecial);
+              const fxType = getElementEffectType(typeB, isSpecial);
+              setEffectA(fxType);
 
               if (isSpecial) {
                 playSoundType('special');
-                // Ataque especial inflige el doble de daño
+                triggerShake();
                 const dmg = Math.max(2, Math.round((((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB) * 2.0));
                 currentHpValA = Math.max(0, currentHpValA - dmg);
                 setHpA(currentHpValA);
+                setFloatA({ id: Date.now(), text: `💥 -${dmg} PS`, type: 'special' });
                 log.push(`💥 ¡ATAQUE ESPECIAL! ¡${detailB.name} desata ${moveName} infligiendo ${dmg} daño devastador!`);
               } else {
-                playSoundType('hit');
+                playSoundType(fxType);
+                if (multB > 1) triggerShake();
                 const dmg = Math.max(1, Math.round(((detailB.stats[1].base_stat / 5) + Math.random() * 5) * multB));
                 currentHpValA = Math.max(0, currentHpValA - dmg);
                 setHpA(currentHpValA);
+                setFloatA({ id: Date.now(), text: `⚔️ -${dmg} PS`, type: 'damage' });
                 log.push(`⚔️ ${detailB.name} usa ${moveName} y causa ${dmg} daño.`);
               }
             }
@@ -591,25 +813,25 @@ export default function BattleSimulator() {
 
           setBattleLog([...log]);
 
-          // Fase 3: Recuperación del defensor a idle (esperar a que terminen de destellar/saltar)
+          // Fase 3: Recuperación del defensor a idle
           setTimeout(() => {
             if (currentHpValA > 0 && currentHpValB > 0) {
               setStatusA('idle');
               setStatusB('idle');
             }
+            setEffectA(null);
+            setEffectB(null);
 
-            // Próximo turno en 380ms
             turn = 1 - turn;
-            setTimeout(runTurn, 380);
-          }, 480);
+            setTimeout(runTurn, 400);
+          }, 500);
 
         }, 380);
 
       }, 50);
     };
 
-    // Lanzar el primer turno con un delay de preparación
-    setTimeout(runTurn, 1000);
+    setTimeout(runTurn, 900);
   };
 
   const handleReset = () => {
@@ -621,7 +843,14 @@ export default function BattleSimulator() {
     setHpB(0);
     setStatusA('idle');
     setStatusB('idle');
+    setEffectA(null);
+    setEffectB(null);
+    setFloatA(null);
+    setFloatB(null);
   };
+
+  // Obtener la última línea de acción para el Ticker HUD
+  const latestAction = battleLog.length > 0 ? battleLog[battleLog.length - 1] : null;
 
   return (
     <main className="battle-arena-container">
@@ -631,10 +860,27 @@ export default function BattleSimulator() {
             ◀ Volver a la Pokédex
           </Button>
           <h1 className="arena-title">⚔️ Arena de Combate</h1>
-          <p className="arena-subtitle">Elige y simula enfrentamientos épicos con multiplicadores de daño oficiales</p>
+          <p className="arena-subtitle">Elige y simula enfrentamientos épicos con efectos elementales en vivo</p>
         </header>
 
-        <div className="arena-grid">
+        {/* Banner Ticker de Acción en Vivo */}
+        <AnimatePresence mode="wait">
+          {latestAction && (
+            <motion.div 
+              key={latestAction}
+              className="live-action-banner-hud"
+              initial={{ opacity: 0, y: -15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.95 }}
+              transition={{ duration: 0.25 }}
+            >
+              <span className="live-hud-icon">⚡ ACCIÓN EN VIVO:</span>
+              <span className="live-hud-text">{latestAction}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className={`arena-grid ${screenShake ? 'arena-shake' : ''}`}>
           {/* Slot Combatiente A */}
           <div className="arena-slot">
             <h3 className="slot-heading">Combatiente A</h3>
@@ -646,6 +892,8 @@ export default function BattleSimulator() {
               maxHp={maxHpA}
               status={statusA}
               side="left"
+              activeEffect={effectA}
+              floatingText={floatA}
             />
           </div>
 
@@ -653,7 +901,7 @@ export default function BattleSimulator() {
           <div className="vs-divider">
             <motion.div 
               className="vs-badge"
-              animate={battleRunning ? { scale: [1, 1.2, 1] } : {}}
+              animate={battleRunning ? { scale: [1, 1.25, 1], boxShadow: ['0 0 20px rgba(255,82,82,0.4)', '0 0 35px rgba(255,82,82,0.8)', '0 0 20px rgba(255,82,82,0.4)'] } : {}}
               transition={{ repeat: Infinity, duration: 0.8 }}
             >
               VS
@@ -671,6 +919,8 @@ export default function BattleSimulator() {
               maxHp={maxHpB}
               status={statusB}
               side="right"
+              activeEffect={effectB}
+              floatingText={floatB}
             />
           </div>
         </div>
@@ -690,7 +940,7 @@ export default function BattleSimulator() {
           )}
         </div>
 
-        {/* Panel de Registro de Combate */}
+        {/* Panel de Registro de Combate (Auto-scrollable) */}
         <AnimatePresence>
           {(battleLog.length > 0) && (
             <motion.div 
@@ -699,15 +949,18 @@ export default function BattleSimulator() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
             >
-              <h3 className="log-title">📋 Registro de Turnos</h3>
-              <div className="log-entries">
+              <div className="log-header-row">
+                <h3 className="log-title">📋 Registro de Turnos</h3>
+                <span className="log-badge-count">{battleLog.length} turnos</span>
+              </div>
+              <div className="log-entries" ref={logContainerRef}>
                 {battleLog.map((entry, index) => (
                   <motion.div 
                     key={index} 
-                    className={`log-entry ${entry.includes('🏆') ? 'winner-entry' : ''}`}
+                    className={`log-entry ${entry.includes('🏆') ? 'winner-entry' : ''} ${entry.includes('💥') ? 'special-entry' : ''}`}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 }}
+                    transition={{ delay: 0.03 }}
                   >
                     {entry}
                   </motion.div>
