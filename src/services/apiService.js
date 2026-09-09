@@ -1,14 +1,19 @@
-let activeApiBaseUrl = 'http://localhost:5000/api';
+let activeApiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const getApiBaseUrl = async () => {
-  try {
-    const res = await fetch('http://localhost:5000/api/health', { signal: AbortSignal.timeout(800) });
-    if (res.ok) {
-      activeApiBaseUrl = 'http://localhost:5000/api';
-      return activeApiBaseUrl;
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  for (const port of [3000, 5000, 5001]) {
+    try {
+      const res = await fetch(`http://localhost:${port}/api/health`, { signal: AbortSignal.timeout(600) });
+      if (res.ok) {
+        activeApiBaseUrl = `http://localhost:${port}/api`;
+        return activeApiBaseUrl;
+      }
+    } catch {
+      // probar siguiente puerto
     }
-  } catch {
-    activeApiBaseUrl = 'http://localhost:5001/api';
   }
   return activeApiBaseUrl;
 };
