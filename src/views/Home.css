@@ -76,21 +76,23 @@
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: 650px;
+  margin: 0 auto;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .image-container:hover {
-  transform: translateY(-15px) scale(1.03) rotateY(2deg);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.6);
 }
 
 .image-container:hover .pokemon-main-image {
-  transform: scale(1.15) rotate(-3deg);
+  transform: scale(1.05);
 }
 
 .image-container:hover .image-overlay {
-  opacity: 1;
+  opacity: 0.85;
 }
 
 .pokemon-main-image {
