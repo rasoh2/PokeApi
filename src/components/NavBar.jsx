@@ -67,6 +67,17 @@ const NavBar = () => {
             </li>
             <li className='nav-item mx-2'>
               <NavLink
+                to='/battle'
+                className={({ isActive }) =>
+                  isActive ? "nav-link px-3 py-2 active" : "nav-link px-3 py-2"
+                }
+              >
+                <i className='fas fa-fist-raised me-2'></i>
+                Arena de Combate
+              </NavLink>
+            </li>
+            <li className='nav-item mx-2'>
+              <NavLink
                 to='/quiz'
                 className={({ isActive }) =>
                   isActive ? "nav-link px-3 py-2 active" : "nav-link px-3 py-2"
