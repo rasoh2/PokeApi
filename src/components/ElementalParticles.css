@@ -1,0 +1,63 @@
+.particle-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.particle-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.particle-type-fire {
+  animation: flash-red 0.3s ease-in-out;
+}
+
+.particle-type-electric {
+  animation: flash-yellow 0.3s ease-in-out;
+}
+
+.particle-type-water {
+  animation: flash-blue 0.3s ease-in-out;
+}
+
+.particle-type-grass {
+  animation: flash-green 0.3s ease-in-out;
+}
+
+.particle-type-poison {
+  animation: flash-purple 0.3s ease-in-out;
+}
+
+@keyframes flash-red {
+  0% { background: rgba(255, 69, 0, 0.2); }
+  100% { background: transparent; }
+}
+
+@keyframes flash-yellow {
+  0% { background: rgba(255, 255, 0, 0.3); }
+  50% { background: rgba(255, 255, 255, 0.5); }
+  100% { background: transparent; }
+}
+
+@keyframes flash-blue {
+  0% { background: rgba(0, 191, 255, 0.2); }
+  100% { background: transparent; }
+}
+
+@keyframes flash-green {
+  0% { background: rgba(50, 205, 50, 0.2); }
+  100% { background: transparent; }
+}
+
+@keyframes flash-purple {
+  0% { background: rgba(148, 0, 211, 0.25); }
+  100% { background: transparent; }
+}

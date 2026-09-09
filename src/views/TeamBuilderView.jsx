@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { usePokemonList, usePokemonDetails } from '../hooks/usePokemonData';
+import { usePokemonList } from '../hooks/usePokemonData';
 import TypeCoverageMatrix from '../components/TypeCoverageMatrix';
 import SearchPredictive from '../components/SearchPredictive';
+import BattleSimulator from '../components/BattleSimulator';
 import { apiService } from '../services/apiService';
 import { Button, Card, TextInput, Modal, Loader } from '@gravity-ui/uikit';
 import { motion } from 'framer-motion';
 import './TeamBuilderView.css';
 
 export default function TeamBuilderView() {
-  const [teamName, setTeamName] = useState('Mi Equipo Legendario');
-  const [teamNotes, setTeamNotes] = useState('');
+  const [teamName, setTeamName] = useState('Mi Trío Competitivo GBA');
+  const [teamNotes, setTeamNotes] = useState('Estrategia de ataque rápido y cobertura defensiva');
   const [selectedPokemons, setSelectedPokemons] = useState([]);
   const [activeSlot, setActiveSlot] = useState(null);
-  const [searchPokemon, setSearchPokemon] = useState('');
   const [publicTeams, setPublicTeams] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [activeTab, setActiveTab] = useState('builder'); // 'builder' | 'community'
+  const [inArenaMode, setInArenaMode] = useState(false);
+  const [showRulesModal, setShowRulesModal] = useState(false);
 
   const { pokemones } = usePokemonList();
 
@@ -54,7 +56,7 @@ export default function TeamBuilderView() {
         updated[activeSlot] = newPokemon;
         setSelectedPokemons(updated);
       } else {
-        if (selectedPokemons.length < 6) {
+        if (selectedPokemons.length < 3) {
           setSelectedPokemons([...selectedPokemons, newPokemon]);
         }
       }
@@ -83,7 +85,7 @@ export default function TeamBuilderView() {
         notes: teamNotes,
         isPublic: true
       });
-      setSaveMessage('🎉 ¡Equipo guardado exitosamente en MongoDB!');
+      setSaveMessage('🎉 ¡Equipo guardado exitosamente en MongoDB Atlas!');
       loadPublicTeams();
     } catch (err) {
       setSaveMessage(`❌ Error al guardar en MongoDB: ${err.message}`);
@@ -92,12 +94,20 @@ export default function TeamBuilderView() {
     }
   };
 
+  if (inArenaMode) {
+    return (
+      <div className="arena-mode-container">
+        <BattleSimulator playerTeam={selectedPokemons} onClose={() => setInArenaMode(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="team-builder-view">
       <div className="builder-header">
-        <h1 className="builder-title">⚡ Team Builder & Analizador Táctico</h1>
+        <h1 className="builder-title">⚡ Team Builder 3v3 & Arena GBA</h1>
         <p className="builder-subtitle">
-          Crea tu alineación competitiva de 6 Pokémon, analiza su cobertura defensiva en tiempo real y guárdala en MongoDB.
+          Diseña tu trío de Pokémon, analiza la matriz defensiva y combate en la Arena estilo Game Boy Advance por turnos.
         </p>
 
         <div className="builder-tabs">
@@ -105,13 +115,19 @@ export default function TeamBuilderView() {
             className={`tab-btn ${activeTab === 'builder' ? 'active' : ''}`}
             onClick={() => setActiveTab('builder')}
           >
-            🛠️ Diseñador de Equipo
+            🛠️ Diseñador de Trío (3vs3)
           </button>
           <button
             className={`tab-btn ${activeTab === 'community' ? 'active' : ''}`}
             onClick={() => setActiveTab('community')}
           >
             🌐 Equipos de la Comunidad (MongoDB)
+          </button>
+          <button
+            className="tab-btn rules-tab-btn"
+            onClick={() => setShowRulesModal(true)}
+          >
+            📜 Reglamento de Arena
           </button>
         </div>
       </div>
@@ -124,7 +140,7 @@ export default function TeamBuilderView() {
               <TextInput
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
-                placeholder="Ej. Kanto Competitive Squad"
+                placeholder="Ej. Kanto Competitive Trio"
                 size="l"
               />
             </div>
@@ -134,15 +150,15 @@ export default function TeamBuilderView() {
               <TextInput
                 value={teamNotes}
                 onChange={(e) => setTeamNotes(e.target.value)}
-                placeholder="Estrategia principal, combos, items..."
+                placeholder="Estrategia de combate, cobertura..."
                 size="m"
               />
             </div>
           </div>
 
-          <h2 className="section-title">Alineación del Equipo ({selectedPokemons.length}/6)</h2>
-          <div className="team-slots-grid">
-            {[0, 1, 2, 3, 4, 5].map((slotIndex) => {
+          <h2 className="section-title">Alineación del Trío ({selectedPokemons.length}/3)</h2>
+          <div className="team-slots-grid gba-3slots">
+            {[0, 1, 2].map((slotIndex) => {
               const pokemon = selectedPokemons[slotIndex];
               return (
                 <div key={slotIndex} className="team-slot-card">
@@ -171,7 +187,7 @@ export default function TeamBuilderView() {
                       onClick={() => setActiveSlot(slotIndex)}
                     >
                       <span className="plus-icon">+</span>
-                      <span>Agregar Pokémon</span>
+                      <span>Agregar Pokémon #{slotIndex + 1}</span>
                     </div>
                   )}
                 </div>
@@ -183,23 +199,32 @@ export default function TeamBuilderView() {
           <TypeCoverageMatrix pokemons={selectedPokemons} />
 
           {/* Action Bar */}
-          <div className="builder-actions">
+          <div className="builder-actions-bar">
             <Button
               view="action"
+              size="xl"
+              className="arena-launch-btn"
+              onClick={() => setInArenaMode(true)}
+            >
+              🎮 ¡Entrar a la Arena GBA (3v3)!
+            </Button>
+
+            <Button
+              view="outlined"
               size="xl"
               disabled={isSaving || selectedPokemons.length === 0}
               onClick={handleSaveTeamToMongoDB}
             >
               {isSaving ? <Loader size="s" /> : '💾 Guardar Equipo en MongoDB'}
             </Button>
-            {saveMessage && <div className="save-message">{saveMessage}</div>}
           </div>
+          {saveMessage && <div className="save-message">{saveMessage}</div>}
         </div>
       )}
 
       {activeTab === 'community' && (
         <div className="community-content">
-          <h2 className="section-title">Equipos Guardados en la Base de Datos (MongoDB)</h2>
+          <h2 className="section-title">Equipos Guardados en MongoDB Atlas</h2>
           {publicTeams.length === 0 ? (
             <div className="empty-state">No hay equipos públicos guardados aún en MongoDB.</div>
           ) : (
@@ -228,6 +253,24 @@ export default function TeamBuilderView() {
             pokemones={pokemones}
             onSelectPokemon={(name) => handleAddPokemonToSlot(name)}
           />
+        </div>
+      </Modal>
+
+      {/* Modal for Arena Rules */}
+      <Modal open={showRulesModal} onClose={() => setShowRulesModal(false)}>
+        <div className="modal-rules-content">
+          <h2>📜 Reglamento Oficial de la Arena GBA (3v3)</h2>
+          <ul>
+            <li>🎮 **Peleas 1v1 Activas:** Cada combate enfrenta a un Pokémon en el campo de batalla.</li>
+            <li>👥 **Trío Competitivo:** Cada entrenador entra a la arena con un equipo de 3 Pokémon.</li>
+            <li>⚡ **Iniciativa por Velocidad (`speed`):** El Pokémon con mayor atributo ataca primero en el turno.</li>
+            <li>🎯 **Multiplicadores de Daño:** Bonificador de tipo (x2 Súper efectivo, x0.5 Poco efectivo, x0 Inmune).</li>
+            <li>🔄 **Relevos Tácticos:** Puedes cambiar de Pokémon activo consumiendo la acción del turno.</li>
+            <li>💾 **Sincronización:** Al concluir la batalla, el reporte se registra en **MongoDB Atlas**.</li>
+          </ul>
+          <Button view="action" size="l" onClick={() => setShowRulesModal(false)}>
+            ¡Entendido, a Combatir!
+          </Button>
         </div>
       </Modal>
     </div>
