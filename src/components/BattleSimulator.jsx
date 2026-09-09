@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { retroAudio } from '../utils/retroAudio';
-import ElementalParticles from './ElementalParticles';
 import { apiService } from '../services/apiService';
 import confetti from 'canvas-confetti';
 import './BattleSimulator.css';
 
-// Type Effectiveness Table
+// Tabla de Efectividad de Tipos
 const TYPE_CHART = {
   fire: { grass: 2, ice: 2, bug: 2, steel: 2, fire: 0.5, water: 0.5, rock: 0.5, dragon: 0.5 },
   water: { fire: 2, ground: 2, rock: 2, water: 0.5, grass: 0.5, dragon: 0.5 },
@@ -53,29 +52,25 @@ const DEFAULT_RIVAL_TEAM = [
 ];
 
 export default function BattleSimulator({ playerTeam = [], onClose }) {
-  // Setup teams (must have 3)
   const [playerPokemons, setPlayerPokemons] = useState([]);
   const [rivalPokemons, setRivalPokemons] = useState([]);
   
   const [playerActiveIdx, setPlayerActiveIdx] = useState(0);
   const [rivalActiveIdx, setRivalActiveIdx] = useState(0);
 
-  // Current battle state
   const [battleMessage, setBattleMessage] = useState('¡Empieza el combate GBA! Selecciona tu acción.');
   const [menuMode, setMenuMode] = useState('main'); // 'main' | 'moves' | 'switch' | 'rules'
   const [isAnimating, setIsAnimating] = useState(false);
-  const [activeParticle, setActiveParticle] = useState({ active: false, type: 'normal' });
   const [battleOver, setBattleOver] = useState(false);
   const [winner, setWinner] = useState(null);
   const [turnCount, setTurnCount] = useState(1);
   const [battleLogs, setBattleLogs] = useState([]);
 
-  // Shake effects
-  const [shakePlayer, setShakePlayer] = useState(false);
-  const [shakeRival, setShakeRival] = useState(false);
+  // Impact flash states for target sprite
+  const [hitEffectPlayer, setHitEffectPlayer] = useState(null);
+  const [hitEffectRival, setHitEffectRival] = useState(null);
 
   useEffect(() => {
-    // Format Player Team
     let pTeam = playerTeam.length > 0 ? playerTeam.slice(0, 3) : DEFAULT_RIVAL_TEAM;
     const formattedPlayer = pTeam.map((p) => ({
       ...p,
@@ -100,7 +95,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
   const activePlayer = playerPokemons[playerActiveIdx] || playerPokemons[0];
   const activeRival = rivalPokemons[rivalActiveIdx] || rivalPokemons[0];
 
-  // Helper for type multiplier
   const getTypeMultiplier = (moveType, targetTypes) => {
     let mult = 1;
     targetTypes.forEach((t) => {
@@ -110,7 +104,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     return mult;
   };
 
-  // Generate 4 moves for active pokemon based on its types
   const getMoves = (pokemon) => {
     if (!pokemon) return [];
     const primaryType = pokemon.types?.[0] || 'normal';
@@ -124,7 +117,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     ];
   };
 
-  // Turn Execution
   const handleExecuteMove = async (move) => {
     if (isAnimating || battleOver || !activePlayer || !activeRival) return;
     setIsAnimating(true);
@@ -135,13 +127,11 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     const playerFirst = playerSpeed >= rivalSpeed;
 
     if (playerFirst) {
-      // Player attacks first
       await executeAttack(activePlayer, activeRival, move, 'player');
       if (checkBattleState()) {
         setIsAnimating(false);
         return;
       }
-      // Rival counters if not fainted
       if (rivalPokemons[rivalActiveIdx]?.currentHp > 0) {
         const rivalMoves = getMoves(activeRival);
         const randomRivalMove = rivalMoves[Math.floor(Math.random() * rivalMoves.length)];
@@ -149,7 +139,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
         checkBattleState();
       }
     } else {
-      // Rival attacks first
       const rivalMoves = getMoves(activeRival);
       const randomRivalMove = rivalMoves[Math.floor(Math.random() * rivalMoves.length)];
       await executeAttack(activeRival, activePlayer, randomRivalMove, 'rival');
@@ -157,7 +146,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
         setIsAnimating(false);
         return;
       }
-      // Player counters if not fainted
       if (playerPokemons[playerActiveIdx]?.currentHp > 0) {
         await executeAttack(activePlayer, activeRival, move, 'player');
         checkBattleState();
@@ -171,9 +159,17 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
   const executeAttack = async (attacker, defender, move, attackerSide) => {
     setBattleMessage(`¡${attacker.name.toUpperCase()} usó ${move.name}!`);
     retroAudio.playAttackSound(move.type);
-    setActiveParticle({ active: true, type: move.type });
 
-    await new Promise((r) => setTimeout(r, 600));
+    // Apply clean hit animation to defender sprite only
+    if (attackerSide === 'player') {
+      setHitEffectRival(move.type);
+      setTimeout(() => setHitEffectRival(null), 450);
+    } else {
+      setHitEffectPlayer(move.type);
+      setTimeout(() => setHitEffectPlayer(null), 450);
+    }
+
+    await new Promise((r) => setTimeout(r, 450));
 
     // Calculate Damage
     const multiplier = getTypeMultiplier(move.type, defender.types);
@@ -181,58 +177,54 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     const defenseStat = defender.stats?.defense || 50;
 
     let baseDamage = Math.floor((((2 * 50) / 5 + 2) * move.power * (attackStat / defenseStat)) / 50 + 2);
-    let finalDamage = Math.max(5, Math.floor(baseDamage * multiplier));
+    let finalDamage = Math.max(8, Math.floor(baseDamage * multiplier));
 
-    // Shake Defender
-    if (attackerSide === 'player') {
-      setShakeRival(true);
-      setTimeout(() => setShakeRival(false), 400);
-    } else {
-      setShakePlayer(true);
-      setTimeout(() => setShakePlayer(false), 400);
-    }
-
-    // Effect Message & Audio
     let effectText = '';
     if (multiplier > 1) {
       effectText = ' ¡Es súper efectivo!';
       retroAudio.playSuperEffectiveSound();
     } else if (multiplier === 0) {
       effectText = ' No afecta al objetivo...';
+      finalDamage = 0;
     } else if (multiplier < 1) {
       effectText = ' No es muy efectivo...';
     }
 
     setBattleMessage(`¡${attacker.name.toUpperCase()} usó ${move.name}!${effectText}`);
 
-    // Update HP
+    // Update HP cleanly with new immutable object references for React state
     if (attackerSide === 'player') {
       setRivalPokemons((prev) => {
         const copy = [...prev];
         const newHp = Math.max(0, copy[rivalActiveIdx].currentHp - finalDamage);
-        copy[rivalActiveIdx].currentHp = newHp;
-        if (newHp === 0) copy[rivalActiveIdx].isFainted = true;
+        copy[rivalActiveIdx] = {
+          ...copy[rivalActiveIdx],
+          currentHp: newHp,
+          isFainted: newHp === 0
+        };
         return copy;
       });
     } else {
       setPlayerPokemons((prev) => {
         const copy = [...prev];
         const newHp = Math.max(0, copy[playerActiveIdx].currentHp - finalDamage);
-        copy[playerActiveIdx].currentHp = newHp;
-        if (newHp === 0) copy[playerActiveIdx].isFainted = true;
+        copy[playerActiveIdx] = {
+          ...copy[playerActiveIdx],
+          currentHp: newHp,
+          isFainted: newHp === 0
+        };
         return copy;
       });
     }
 
     setBattleLogs((prev) => [
       ...prev,
-      `Turno ${turnCount}: ${attacker.name} causó ${finalDamage} de daño a ${defender.name}.${effectText}`
+      `Turno ${turnCount}: ${attacker.name.toUpperCase()} usó ${move.name} ➔ ${finalDamage} de daño a ${defender.name.toUpperCase()}.${effectText}`
     ]);
 
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 800));
   };
 
-  // Switch Active Pokemon
   const handleSwitchPokemon = (newIdx) => {
     if (newIdx === playerActiveIdx || playerPokemons[newIdx]?.isFainted || isAnimating) return;
     setIsAnimating(true);
@@ -240,7 +232,11 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     setPlayerActiveIdx(newIdx);
     setBattleMessage(`¡Adelante ${playerPokemons[newIdx].name.toUpperCase()}!`);
     
-    // Enemy free turn on switch
+    setBattleLogs((prev) => [
+      ...prev,
+      `Turno ${turnCount}: Cambiaste a ${playerPokemons[newIdx].name.toUpperCase()}`
+    ]);
+
     setTimeout(async () => {
       if (!battleOver && rivalPokemons[rivalActiveIdx]?.currentHp > 0) {
         const rivalMoves = getMoves(activeRival);
@@ -252,9 +248,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     }, 800);
   };
 
-  // Check victory / faint state
   const checkBattleState = () => {
-    // Check rival fainted
     const currentRival = rivalPokemons[rivalActiveIdx];
     if (currentRival && currentRival.currentHp <= 0) {
       retroAudio.playFaintSound();
@@ -263,7 +257,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
         setRivalActiveIdx(nextRivalIdx);
         setBattleMessage(`¡El ${currentRival.name.toUpperCase()} enemigo fue debilitado! Entra ${rivalPokemons[nextRivalIdx].name.toUpperCase()}.`);
       } else {
-        // PLAYER WINS
         setBattleOver(true);
         setWinner('player');
         retroAudio.playVictorySound();
@@ -274,7 +267,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
       }
     }
 
-    // Check player fainted
     const currentPlayer = playerPokemons[playerActiveIdx];
     if (currentPlayer && currentPlayer.currentHp <= 0) {
       retroAudio.playFaintSound();
@@ -283,7 +275,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
         setPlayerActiveIdx(nextPlayerIdx);
         setBattleMessage(`¡Tu ${currentPlayer.name.toUpperCase()} se debilitó! ¡Sal ${playerPokemons[nextPlayerIdx].name.toUpperCase()}!`);
       } else {
-        // RIVAL WINS
         setBattleOver(true);
         setWinner('rival');
         setBattleMessage('💀 Has sido derrotado. Todos tus Pokémon están fuera de combate.');
@@ -312,13 +303,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
   return (
     <div className="gba-arena-wrapper">
       <div className="gba-screen">
-        {/* Particle Layer */}
-        <ElementalParticles
-          type={activeParticle.type}
-          active={activeParticle.active}
-          onComplete={() => setActiveParticle({ active: false, type: 'normal' })}
-        />
-
         {/* Top Header / Arena HUD */}
         <div className="gba-top-hud">
           <span className="gba-badge">🎮 Arena de Combate GBA 3v3</span>
@@ -343,7 +327,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
                   <div
                     className="hp-fill"
                     style={{
-                      width: `${(activeRival?.currentHp / activeRival?.maxHp) * 100}%`,
+                      width: `${Math.max(0, (activeRival?.currentHp / activeRival?.maxHp) * 100)}%`,
                       backgroundColor: activeRival?.currentHp > activeRival?.maxHp * 0.5 ? '#00FF66' : activeRival?.currentHp > activeRival?.maxHp * 0.2 ? '#FFD700' : '#FF3333'
                     }}
                   />
@@ -351,24 +335,17 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
               </div>
               <div className="hp-numbers">{activeRival?.currentHp} / {activeRival?.maxHp}</div>
             </div>
-            <motion.div
-              className={`sprite-platform enemy-platform ${shakeRival ? 'shake-hit' : ''}`}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-            >
+
+            <div className={`sprite-platform enemy-platform ${hitEffectRival ? `hit-flash hit-type-${hitEffectRival}` : ''}`}>
               <img src={activeRival?.sprite} alt={activeRival?.name} className="enemy-sprite" />
-            </motion.div>
+            </div>
           </div>
 
           {/* Player Side (Bottom Left) */}
           <div className="gba-fighter player-side">
-            <motion.div
-              className={`sprite-platform player-platform ${shakePlayer ? 'shake-hit' : ''}`}
-              animate={{ y: [0, -4, 0] }}
-              transition={{ repeat: Infinity, duration: 2.5 }}
-            >
+            <div className={`sprite-platform player-platform ${hitEffectPlayer ? `hit-flash hit-type-${hitEffectPlayer}` : ''}`}>
               <img src={activePlayer?.sprite} alt={activePlayer?.name} className="player-sprite" />
-            </motion.div>
+            </div>
 
             <div className="gba-status-card player-card">
               <div className="status-name-row">
@@ -381,7 +358,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
                   <div
                     className="hp-fill"
                     style={{
-                      width: `${(activePlayer?.currentHp / activePlayer?.maxHp) * 100}%`,
+                      width: `${Math.max(0, (activePlayer?.currentHp / activePlayer?.maxHp) * 100)}%`,
                       backgroundColor: activePlayer?.currentHp > activePlayer?.maxHp * 0.5 ? '#00FF66' : activePlayer?.currentHp > activePlayer?.maxHp * 0.2 ? '#FFD700' : '#FF3333'
                     }}
                   />
@@ -477,6 +454,22 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
               <button className="gba-btn btn-attack" onClick={() => window.location.reload()}>
                 🔄 Jugar Otra Batalla
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* Historial de los últimos 6 movimientos */}
+        <div className="gba-log-panel">
+          <div className="log-panel-header">📜 Historial de los últimos 6 movimientos:</div>
+          {battleLogs.length === 0 ? (
+            <div className="log-empty">Sin movimientos aún. Selecciona un ataque para comenzar.</div>
+          ) : (
+            <div className="log-list">
+              {battleLogs.slice(-6).map((logItem, index) => (
+                <div key={index} className="log-entry">
+                  {logItem}
+                </div>
+              ))}
             </div>
           )}
         </div>
