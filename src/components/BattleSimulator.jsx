@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { retroAudio } from '../utils/retroAudio';
 import { apiService } from '../services/apiService';
 import confetti from 'canvas-confetti';
@@ -70,6 +69,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
   const [hitEffectPlayer, setHitEffectPlayer] = useState(null);
   const [hitEffectRival, setHitEffectRival] = useState(null);
 
+  // Initialize ONCE on component mount to prevent HP state resets on re-renders
   useEffect(() => {
     let pTeam = playerTeam.length > 0 ? playerTeam.slice(0, 3) : DEFAULT_RIVAL_TEAM;
     const formattedPlayer = pTeam.map((p) => ({
@@ -90,7 +90,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     setRivalPokemons(formattedRival);
     setPlayerActiveIdx(0);
     setRivalActiveIdx(0);
-  }, [playerTeam]);
+  }, []);
 
   const activePlayer = playerPokemons[playerActiveIdx] || playerPokemons[0];
   const activeRival = rivalPokemons[rivalActiveIdx] || rivalPokemons[0];
@@ -160,7 +160,6 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     setBattleMessage(`¡${attacker.name.toUpperCase()} usó ${move.name}!`);
     retroAudio.playAttackSound(move.type);
 
-    // Apply clean hit animation to defender sprite only
     if (attackerSide === 'player') {
       setHitEffectRival(move.type);
       setTimeout(() => setHitEffectRival(null), 450);
@@ -177,7 +176,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
     const defenseStat = defender.stats?.defense || 50;
 
     let baseDamage = Math.floor((((2 * 50) / 5 + 2) * move.power * (attackStat / defenseStat)) / 50 + 2);
-    let finalDamage = Math.max(8, Math.floor(baseDamage * multiplier));
+    let finalDamage = Math.max(12, Math.floor(baseDamage * multiplier));
 
     let effectText = '';
     if (multiplier > 1) {
@@ -192,29 +191,31 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
 
     setBattleMessage(`¡${attacker.name.toUpperCase()} usó ${move.name}!${effectText}`);
 
-    // Update HP cleanly with new immutable object references for React state
+    // Update HP cleanly in state
     if (attackerSide === 'player') {
-      setRivalPokemons((prev) => {
-        const copy = [...prev];
-        const newHp = Math.max(0, copy[rivalActiveIdx].currentHp - finalDamage);
-        copy[rivalActiveIdx] = {
-          ...copy[rivalActiveIdx],
-          currentHp: newHp,
-          isFainted: newHp === 0
-        };
-        return copy;
-      });
+      setRivalPokemons((prev) =>
+        prev.map((p, idx) => {
+          if (idx !== rivalActiveIdx) return p;
+          const newHp = Math.max(0, p.currentHp - finalDamage);
+          return {
+            ...p,
+            currentHp: newHp,
+            isFainted: newHp === 0
+          };
+        })
+      );
     } else {
-      setPlayerPokemons((prev) => {
-        const copy = [...prev];
-        const newHp = Math.max(0, copy[playerActiveIdx].currentHp - finalDamage);
-        copy[playerActiveIdx] = {
-          ...copy[playerActiveIdx],
-          currentHp: newHp,
-          isFainted: newHp === 0
-        };
-        return copy;
-      });
+      setPlayerPokemons((prev) =>
+        prev.map((p, idx) => {
+          if (idx !== playerActiveIdx) return p;
+          const newHp = Math.max(0, p.currentHp - finalDamage);
+          return {
+            ...p,
+            currentHp: newHp,
+            isFainted: newHp === 0
+          };
+        })
+      );
     }
 
     setBattleLogs((prev) => [
@@ -327,7 +328,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
                   <div
                     className="hp-fill"
                     style={{
-                      width: `${Math.max(0, (activeRival?.currentHp / activeRival?.maxHp) * 100)}%`,
+                      width: `${Math.max(0, Math.min(100, (activeRival?.currentHp / activeRival?.maxHp) * 100))}%`,
                       backgroundColor: activeRival?.currentHp > activeRival?.maxHp * 0.5 ? '#00FF66' : activeRival?.currentHp > activeRival?.maxHp * 0.2 ? '#FFD700' : '#FF3333'
                     }}
                   />
@@ -358,7 +359,7 @@ export default function BattleSimulator({ playerTeam = [], onClose }) {
                   <div
                     className="hp-fill"
                     style={{
-                      width: `${Math.max(0, (activePlayer?.currentHp / activePlayer?.maxHp) * 100)}%`,
+                      width: `${Math.max(0, Math.min(100, (activePlayer?.currentHp / activePlayer?.maxHp) * 100))}%`,
                       backgroundColor: activePlayer?.currentHp > activePlayer?.maxHp * 0.5 ? '#00FF66' : activePlayer?.currentHp > activePlayer?.maxHp * 0.2 ? '#FFD700' : '#FF3333'
                     }}
                   />
