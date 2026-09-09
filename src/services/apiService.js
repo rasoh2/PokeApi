@@ -1,8 +1,19 @@
-let activeApiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const normalizeApiUrl = (url) => {
+  if (!url) return '';
+  let cleanUrl = url.trim().replace(/\/+$/, '');
+  if (!cleanUrl.endsWith('/api')) {
+    cleanUrl += '/api';
+  }
+  return cleanUrl;
+};
+
+let activeApiBaseUrl = import.meta.env.VITE_API_URL 
+  ? normalizeApiUrl(import.meta.env.VITE_API_URL) 
+  : 'http://localhost:3000/api';
 
 const getApiBaseUrl = async () => {
   if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+    return normalizeApiUrl(import.meta.env.VITE_API_URL);
   }
   for (const port of [3000, 5000, 5001]) {
     try {
@@ -16,6 +27,14 @@ const getApiBaseUrl = async () => {
     }
   }
   return activeApiBaseUrl;
+};
+
+const parseJsonResponse = async (res) => {
+  const contentType = res.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error(`El servidor de API respondió con un formato no válido (HTTP ${res.status}). Verifica que la URL del backend incluya /api.`);
+  }
+  return await res.json();
 };
 
 const getAuthHeaders = () => {
@@ -35,7 +54,7 @@ export const apiService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
     });
-    const data = await res.json();
+    const data = await parseJsonResponse(res);
     if (!res.ok) throw new Error(data.error || 'Register failed');
     if (data.token) localStorage.setItem('trainer_token', data.token);
     return data;
@@ -48,7 +67,7 @@ export const apiService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-    const data = await res.json();
+    const data = await parseJsonResponse(res);
     if (!res.ok) throw new Error(data.error || 'Login failed');
     if (data.token) localStorage.setItem('trainer_token', data.token);
     return data;
@@ -60,7 +79,7 @@ export const apiService = {
       headers: getAuthHeaders()
     });
     if (!res.ok) return null;
-    return await res.json();
+    return await parseJsonResponse(res);
   },
 
   logout() {
@@ -75,7 +94,7 @@ export const apiService = {
       headers: getAuthHeaders(),
       body: JSON.stringify(teamData)
     });
-    const data = await res.json();
+    const data = await parseJsonResponse(res);
     if (!res.ok) throw new Error(data.error || 'Save team failed');
     return data;
   },
@@ -86,14 +105,14 @@ export const apiService = {
       headers: getAuthHeaders()
     });
     if (!res.ok) return [];
-    return await res.json();
+    return await parseJsonResponse(res);
   },
 
   async getPublicTeams() {
     const baseUrl = await getApiBaseUrl();
     const res = await fetch(`${baseUrl}/teams/public`);
     if (!res.ok) return [];
-    return await res.json();
+    return await parseJsonResponse(res);
   },
 
   async deleteTeam(id) {
@@ -102,7 +121,7 @@ export const apiService = {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
-    const data = await res.json();
+    const data = await parseJsonResponse(res);
     if (!res.ok) throw new Error(data.error || 'Delete team failed');
     return data;
   },
@@ -116,7 +135,7 @@ export const apiService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(battleData)
       });
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch (e) {
       console.warn('Could not save battle log to MongoDB:', e);
       return null;
@@ -128,7 +147,7 @@ export const apiService = {
       const baseUrl = await getApiBaseUrl();
       const res = await fetch(`${baseUrl}/battles`);
       if (!res.ok) return [];
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch {
       return [];
     }
@@ -140,7 +159,7 @@ export const apiService = {
       const baseUrl = await getApiBaseUrl();
       const res = await fetch(`${baseUrl}/analytics/top-pokemons`);
       if (!res.ok) return [];
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch {
       return [];
     }
@@ -151,7 +170,7 @@ export const apiService = {
       const baseUrl = await getApiBaseUrl();
       const res = await fetch(`${baseUrl}/analytics/type-popularity`);
       if (!res.ok) return [];
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch {
       return [];
     }
@@ -162,7 +181,7 @@ export const apiService = {
       const baseUrl = await getApiBaseUrl();
       const res = await fetch(`${baseUrl}/analytics/win-rates`);
       if (!res.ok) return [];
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch {
       return [];
     }
@@ -177,7 +196,7 @@ export const apiService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(scoreData)
       });
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch {
       return null;
     }
@@ -188,7 +207,7 @@ export const apiService = {
       const baseUrl = await getApiBaseUrl();
       const res = await fetch(`${baseUrl}/quiz/leaderboard`);
       if (!res.ok) return [];
-      return await res.json();
+      return await parseJsonResponse(res);
     } catch {
       return [];
     }
