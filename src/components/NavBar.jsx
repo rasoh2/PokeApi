@@ -14,7 +14,7 @@ const NavBar = () => {
           />
           <span className='brand-text d-none d-md-inline'>
             <i className='fas fa-bolt text-warning me-1'></i>
-            PokéDex Ultimate
+            PokéDex
           </span>
         </Link>
 
@@ -97,12 +97,6 @@ const NavBar = () => {
                 <i className='fas fa-chart-bar me-2'></i>
                 Analytics MongoDB
               </NavLink>
-            </li>
-            <li className='nav-item ms-3'>
-              <div className='nav-badge'>
-                <i className='fas fa-database text-warning'></i>
-                <span className='ms-1 d-none d-lg-inline'>+1000 Pokémon</span>
-              </div>
             </li>
           </ul>
         </div>

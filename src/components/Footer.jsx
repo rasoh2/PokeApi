@@ -9,7 +9,7 @@ const Footer = () => {
           <div className='col-12 col-md-4 text-center text-md-start mb-3 mb-md-0'>
             <div className='footer-brand'>
               <i className='fas fa-bolt text-warning me-2'></i>
-              <span className='fw-bold'>PokéDex Ultimate</span>
+              <span className='fw-bold'>PokéDex</span>
             </div>
             <p className='footer-copyright mb-0'>
               &copy; {new Date().getFullYear()} | Creado para maestros

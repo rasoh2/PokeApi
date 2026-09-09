@@ -83,7 +83,7 @@ export default function Dashboard() {
             className="header-title-container"
           >
             <h1 className="main-title text-shadow">
-              <span>Ultimate</span> Pokédex
+              Pokédex
             </h1>
             <p className="subtitle">
               Explora el universo Pokémon con físicas interactivas, filtrado predictivo y estadísticas avanzadas
